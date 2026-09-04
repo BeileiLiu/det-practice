@@ -41,7 +41,7 @@
 | 模式 | 入口 | 结构 | 注意 |
 |---|---|---|---|
 | 模拟考试 | header「模拟考试」 | 19 题软流程（buildTestSteps） | 时间到自动下一题；主观题由 AI 批改汇总报告 |
-| 官方流程 | header「官方流程」（绿） | 2024-07 官方 6 段结构 53 题（OFFICIAL_SECTION_PLAN） | IR 强制 叙事+说明，IL 成对抽取 |
+| 2024 旧版流程 | header「2024 旧版流程」 | 历史 6 段结构（OFFICIAL_SECTION_PLAN） | 仅供旧版练习，不代表当前官方考试 |
 
 考试模式通过 `body.testing` 类切换为**沉浸式灰白布局**（见 CSS §Strict official exam layout，整个区块已限定 `body.testing` 生效）；日常练习模式是品牌化界面（hero + 学习统计 + 绿色卡片）。
 
