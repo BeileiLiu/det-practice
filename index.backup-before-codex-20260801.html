@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🦉 DET 模拟练习 · 19 题型</title>
+<style>
+  :root{
+    --accent:#00a3ff; --accent-dark:#0078c8; --bg:#f5f7fa; --card:#ffffff;
+    --text:#1c1e21; --muted:#5f6b76; --border:#e3e8ee; --green:#1aab5a; --red:#e5484d;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text)}
+  .wrap{max-width:900px;margin:0 auto;padding:20px 16px 60px}
+  header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:8px}
+  h1{font-size:22px;margin:0}
+  .header-actions{display:flex;gap:8px}
+  button{font-size:14px;padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:#fff;cursor:pointer;transition:.15s}
+  button:hover{border-color:var(--accent);color:var(--accent-dark)}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.primary:hover{background:var(--accent-dark);color:#fff}
+  button.ai{background:#fff7e6;border-color:#ffd591;color:#d46b08}
+  button.ai:hover{border-color:#ffa940;color:#ad4e00}
+  button.ghost{background:#f0f4f8;border-color:#d6dee6;color:var(--muted)}
+  button.small{font-size:12px;padding:5px 9px}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  nav{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+  nav button{font-size:13px;padding:7px 11px}
+  nav button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .q-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px;flex-wrap:wrap}
+  .q-type{font-weight:600;font-size:15px}
+  .q-sub{font-size:11px;color:var(--muted);font-weight:400}
+  .timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent-dark);background:#eaf5ff;padding:4px 10px;border-radius:20px;font-size:15px}
+  .timer.warn{color:var(--red);background:#fdecec}
+  .q-instr{color:var(--muted);font-size:14px;margin:6px 0 14px}
+  .word-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+  .word{padding:14px;font-size:16px;border-radius:10px;background:#f9fbfd;min-height:48px}
+  .word.selected{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .q-actions{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap}
+  textarea{width:100%;min-height:110px;font-size:15px;padding:12px;border:1px solid var(--border);border-radius:10px;font-family:inherit;resize:vertical}
+  .passage{font-size:16px;line-height:2.2;background:#f9fbfd;border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
+  .fib-input{font-size:15px;width:11ch;padding:2px 6px;border-radius:6px;border:1px solid var(--accent);background:#fff;margin:0 2px}
+  .fib-input.ok{background:#eafaf0;border-color:var(--green)}
+  .fib-input.bad{background:#fdecec;border-color:var(--red)}
+  .fibw-item{margin-bottom:16px;font-size:16px;line-height:2.1}
+  .passage-scroll{max-height:240px;overflow:auto;font-size:16px;line-height:2.0;background:#f9fbfd;border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px}
+  .photo-card{margin:10px 0 14px;padding:30px 18px;text-align:center;border-radius:12px;color:#fff;
+    background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);font-size:15px;line-height:1.7}
+  .photo-img{width:100%;max-height:300px;object-fit:cover;border-radius:12px;margin:8px 0 14px;display:block}
+  .sentence{font-size:19px;text-align:center;padding:20px;background:#f0f7ff;border-radius:12px;margin-bottom:14px;line-height:1.6}
+  .prompt-box{font-size:15px;line-height:1.8;background:#f0f7ff;border-radius:12px;padding:16px;margin-bottom:14px}
+  .ir-q{margin:0 0 14px}
+  .ir-q .qt{font-size:12px;color:var(--accent-dark);font-weight:700}
+  .ir-q p{margin:4px 0 6px;line-height:1.6}
+  .opts{display:flex;flex-direction:column;gap:6px}
+  .opt{display:flex;gap:8px;align-items:flex-start;background:#f9fbfd;border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:14px;line-height:1.5;cursor:pointer}
+  .opt:hover{border-color:var(--accent)}
+  .opt input{margin-top:3px}
+  .chat{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+  .chat .bub{max-width:80%;padding:9px 13px;border-radius:12px;font-size:15px;line-height:1.6}
+  .chat .bub.a{background:#eaf5ff;align-self:flex-start;border-bottom-left-radius:3px}
+  .chat .bub.b{background:#eef1f4;align-self:flex-end;border-bottom-right-radius:3px}
+  .captured{margin-top:10px;color:var(--muted);font-size:14px;min-height:20px;line-height:1.6}
+  .result{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:16px}
+  .result h3{margin:0 0 12px;font-size:16px}
+  .score-line{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .big-score{font-size:34px;font-weight:800;color:var(--accent-dark)}
+  .dims{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px}
+  .dim{background:#f6f9fc;border-radius:8px;padding:10px;text-align:center}
+  .dim b{display:block;font-size:20px}
+  .dim span{color:var(--muted);font-size:12px}
+  .comment{font-size:14px;line-height:1.7;color:var(--text)}
+  .comment .priority{margin-top:8px;color:var(--accent-dark);font-weight:600}
+  .part-tag{display:inline-block;font-size:12px;font-weight:700;color:#fff;background:var(--accent);border-radius:6px;padding:2px 8px;margin-right:6px}
+  footer{margin-top:28px;color:var(--muted);font-size:12px;line-height:1.8}
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:50}
+  .modal{background:#fff;border-radius:14px;padding:22px;width:min(520px,92vw);max-height:86vh;overflow:auto}
+  .modal h2{margin:0 0 14px;font-size:17px}
+  .field{margin-bottom:12px}
+  .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+  .field input{width:100%;font-size:14px;padding:9px 11px;border:1px solid var(--border);border-radius:8px}
+  .hidden{display:none}
+  .hint{font-size:12px;color:var(--muted);margin-top:4px}
+  .history-item{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px}
+  .history-item:last-child{border-bottom:none}
+  .ok{color:var(--green);font-weight:600}
+  .err{color:var(--red);font-weight:600}
+  /* ===== 模拟考试模式 ===== */
+  #testBar{display:flex;align-items:center;gap:10px;background:#eaf5ff;border:1px solid var(--accent);border-radius:10px;padding:8px 14px;margin-bottom:8px;font-size:14px;color:var(--accent-dark)}
+  #testBar button{margin-left:auto}
+  body.testing #typeTabs, body.testing .header-actions{display:none}
+  .test-mode #aiBtn, .test-mode #startBtn, .test-mode .timer{display:none}
+  .test-mode .q-actions{justify-content:flex-end}
+  .test-mode .card{box-shadow:0 2px 12px rgba(0,0,0,.08)}
+  .report-table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+  .report-table th,.report-table td{border-bottom:1px solid var(--border);padding:7px 8px;text-align:left}
+  .report-table th{color:var(--muted);font-weight:600;font-size:12px}
+  .report-table td.c{text-align:right;font-weight:700;color:var(--accent-dark)}
+  .toolbar{display:flex;align-items:center;gap:10px;margin:6px 0 0;font-size:13px;color:var(--muted)}
+  .toolbar select{font-size:13px;padding:5px 8px;border:1px solid var(--border);border-radius:8px}
+  .band{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--accent-dark);border-radius:10px;padding:2px 8px;margin-left:4px;vertical-align:middle}
+  body.testing .toolbar{display:none}
+  /* ===== 互动阅读 IR（Duolingo 绿主题）===== */
+  .ir-green .primary{background:#58CC02;border-color:#58CC02;color:#fff}
+  .ir-green .primary:hover{background:#46A302;color:#fff}
+  .ir-progress{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:12px;color:var(--muted)}
+  .ir-track{flex:1;height:8px;background:#eef1f4;border-radius:10px;overflow:hidden}
+  .ir-track .ir-bar{height:100%;background:#58CC02;border-radius:10px;transition:width .3s}
+  .ir-passage p{margin:6px 0;line-height:1.9}
+  .ir-passage mark{background:#ffe58f;padding:0 2px;border-radius:3px}
+  .ir-passage select.ir-blank{font-size:14px;padding:2px 6px;border-radius:6px;border:1px solid var(--border);background:#fff}
+  .ir-passage select.ir-blank.ir-ok{background:#d9f7be;border-color:#52c41a}
+  .ir-passage select.ir-blank.ir-bad{background:#ffccc7;border-color:#ff4d4f}
+  .ir-sblank{display:inline-block;min-width:150px;border-bottom:2px dashed #bbb;color:#999}
+  .ir-opt{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;font-size:14px;line-height:1.5;border-radius:10px;background:#fff;border:1px solid var(--border)}
+  .ir-opt:hover{border-color:#58CC02}
+  .ir-opt.ir-correct{background:#d9f7be;border-color:#52c41a;color:#237804;font-weight:600}
+  .ir-opt.ir-wrong{background:#ffccc7;border-color:#ff4d4f;color:#a8071a}
+  .ir-fb{min-height:20px;margin-top:8px;font-size:13px;font-weight:600;color:var(--muted)}
+  .ir-passage{user-select:text;-webkit-user-select:text}
+  .ir-pool{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+  .ir-chip{padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:#fff;cursor:grab;font-size:14px;line-height:1.3}
+  .ir-chip:hover{border-color:#58CC02}
+  .ir-chip.sel{border-color:#58CC02;background:#d9f7be}
+  .ir-chip.used{opacity:.35;cursor:default;background:#f0f2f5}
+  .ir-chip-s{font-size:13px;text-align:left;max-width:100%}
+  .ir-dropzone{display:inline-block;min-width:74px;min-height:24px;border-bottom:2px dashed #bbb;color:#999;padding:0 6px;text-align:center;vertical-align:middle;cursor:pointer;transition:.15s}
+  .ir-dz-s{min-width:200px;min-height:26px;line-height:1.4}
+  .ir-dropzone.filled{background:#d9f7be;color:#237804;border-bottom:2px solid #52c41a;font-weight:600}
+  .ir-dropzone.bad{background:#ffccc7;border-bottom-color:#ff4d4f}
+  .ir-dropzone.ok{background:#d9f7be}
+  .opt.il-ok{background:#d9f7be;border-color:#52c41a;color:#237804}
+  .opt.il-bad{background:#ffccc7;border-color:#ff4d4f;color:#a8071a}
+  .il-fb{min-height:20px;margin-top:8px;font-size:13px;font-weight:600;color:var(--accent-dark)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🦉 DET 模拟练习</h1>
+    <div class="header-actions">
+      <button id="btnRandom">🎲 随机一题</button>
+      <button id="btnTest" class="primary">🧪 模拟考试</button>
+      <button id="btnSettings">⚙ 设置</button>
+      <button id="btnHistory">📜 记录</button>
+    </div>
+  </header>
+  <div id="testBar" class="hidden">🧪 模拟考试 · <span id="testPhase"></span> <button id="btnQuitTest">退出考试</button></div>
+  <nav id="typeTabs"></nav>
+  <div class="toolbar">
+    <label for="bandSel">照片分数段</label>
+    <select id="bandSel">
+      <option value="all">全部</option>
+      <option value="60">60–85 · B1</option>
+      <option value="90">90–115 · B2</option>
+      <option value="120">120–160 · C1/C2</option>
+    </select>
+    <span>（仅对看图写作 / 看图说话生效，对应题目上会标分数段）</span>
+  </div>
+  <main>
+    <div id="questionArea"></div>
+    <div id="resultArea"></div>
+  </main>
+  <footer>
+    按 2026 版 DET 19 大题型编排（含互动阅读 5 子题、互动听力 3 子题）。客观题当场自检，主观题由 DeepSeek 实时批改。<br>
+    API Key 只存浏览器 localStorage。「🔄 AI 出题」现场生成新题，无限量。<br>
+    口语/听力需要 Chrome/Edge + 麦克风权限 + 系统英文语音（浏览器 TTS 模拟，辨音仅供参考）。想调难度或补题型，回聊天说一声。
+  </footer>
+</div>
+
+<div id="settingsModal" class="modal-bg hidden">
+  <div class="modal">
+    <h2>⚙ API 设置</h2>
+    <div class="field"><label>API Key</label><input id="setKey" type="password" placeholder="sk-..."></div>
+    <div class="field"><label>模型</label><input id="setModel" placeholder="deepseek-chat"></div>
+    <div class="field"><label>接口地址</label><input id="setEndpoint" placeholder="https://api.deepseek.com/chat/completions"></div>
+    <div class="field"><label>目标分（可选）</label><input id="setGoal" placeholder="例如 125"></div>
+    <div class="field"><label>弱项（可选）</label><input id="setWeak" placeholder="例如：听力、时态"></div>
+    <div class="q-actions">
+      <button id="testBtn">🔌 测试连接</button>
+      <button id="saveBtn" class="primary">保存</button>
+      <button id="closeSettings">关闭</button>
+    </div>
+    <p id="testResult" class="hint"></p>
+  </div>
+</div>
+
+<div id="historyModal" class="modal-bg hidden">
+  <div class="modal">
+    <h2>📜 练习记录</h2>
+    <div id="historyList"></div>
+    <div class="q-actions" style="margin-top:12px"><button id="closeHistory">关闭</button></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+// ================= 设置 =================
+const SETTINGS_KEY='detSettings', HISTORY_KEY='detHistory';
+const DEFAULT_SETTINGS={apiKey:'',model:'deepseek-chat',endpoint:'https://api.deepseek.com/chat/completions',goal:'',weak:''};
+let settings=Object.assign({},DEFAULT_SETTINGS,JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}'));
+function saveSettings(){localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings));}
+
+// ================= 题型配置（2026 DET 19 题型）=================
+const TC={
+  rs:{label:'词汇判断',sub:'Read & Select',time:30},
+  fib:{label:'完形打字',sub:'Read & Complete',time:180},
+  fibw:{label:'选词填空',sub:'Fill in the Blanks',time:180},
+  lt:{label:'听写',sub:'Listen & Type',time:60},
+  ir:{label:'互动阅读',sub:'Interactive Reading',time:420},
+  il:{label:'互动听力',sub:'Interactive Listening',time:480},
+  sp:{label:'看图说话',sub:'Speak About the Photo',time:90},
+  rtsp:{label:'读后口说',sub:'Read, Then Speak',time:90},
+  isp:{label:'互动口说',sub:'Interactive Speaking',time:180},
+  ss:{label:'口说样题',sub:'Speaking Sample',time:180},
+  wp:{label:'看图写作',sub:'Write About the Photo',time:60},
+  iw:{label:'互动写作',sub:'Interactive Writing',time:600},
+  ws:{label:'写作样题',sub:'Writing Sample',time:300}
+};
+const TABORDER=['rs','fib','fibw','lt','ir','il','sp','rtsp','isp','ss','wp','iw','ws'];
+
+// ================= 照片库（按 DET 分数段分档）=================
+// band: 60=60-85 B1 / 90=90-115 B2 / 120=120-160 C1-C2
+const PHOTOS=[
+  {photo:'images/bench.jpg',band:'60',scene:'公园里的一张木质长椅，周围是树木。'},
+  {photo:'images/coffee.jpg',band:'60',scene:'桌上放着一杯咖啡。'},
+  {photo:'images/park.jpg',band:'60',scene:'公园小路上，一位女士牵着一只狗在散步。'},
+  {photo:'images/office.jpg',band:'60',scene:'一间现代会议室，长桌旁摆着椅子。'},
+  {photo:'images/library.jpg',band:'90',scene:'一间安静的图书馆，书架上摆满书，中间有几张长桌。'},
+  {photo:'images/market.jpg',band:'90',scene:'露天市场的一个果蔬摊位，摊上摆满水果和蔬菜。'},
+  {photo:'images/picnic.jpg',band:'90',scene:'公园的野餐区，绿地上有野餐的人和野餐桌。'},
+  {photo:'images/cafe.jpg',band:'90',scene:'街边一家咖啡馆，透过窗户能看到外面的街道。'},
+  {photo:'images/street.jpg',band:'120',scene:'一条繁忙的城市街道，有很多行人和车辆。'},
+  {photo:'images/crowd.jpg',band:'120',scene:'拥挤的购物人群，人们提着袋子在穿行。'},
+  {photo:'images/party.jpg',band:'120',scene:'一群朋友围坐在一起，面带笑容，似乎在庆祝什么。'}
+];
+
+// ================= 内置题库 =================
+const BANK={
+  rs:[
+    {words:[{w:'weather',real:1},{w:'cleam',real:0},{w:'journey',real:1},{w:'thriend',real:0},{w:'honest',real:1},{w:'spleak',real:0},{w:'breakfast',real:1},{w:'mircle',real:0},{w:'window',real:1}]},
+    {words:[{w:'garden',real:1},{w:'cabl',real:0},{w:'courage',real:1},{w:'snurp',real:0},{w:'market',real:1},{w:'blist',real:0},{w:'library',real:1},{w:'grood',real:0},{w:'student',real:1}]}
+  ],
+  fib:[
+    {segments:[
+      {text:'Learning a foreign language can be '},{gap:{word:'challenging'}},
+      {text:' at first, but it becomes easier with regular '},{gap:{word:'practice'}},
+      {text:'. Many experts agree that '},{gap:{word:'immersion'}},
+      {text:' is the fastest way to make real progress.'}
+    ]},
+    {segments:[
+      {text:'The doctor told me to drink more water and get enough '},{gap:{word:'sleep'}},
+      {text:'. A balanced '},{gap:{word:'diet'}},
+      {text:' is also important. Regular exercise helps people stay '},{gap:{word:'healthy'}},
+      {text:' and reduces '},{gap:{word:'stress'}},
+      {text:'.'}
+    ]}
+  ],
+  fibw:[
+    {items:[
+      {segments:[{text:'He threw the ball and tried to '},{gap:{word:'catch'}},{text:' it before it hit the ground.'}]},
+      {segments:[{text:'The meeting was '},{gap:{word:'cancelled'}},{text:' because the manager was sick.'}]},
+      {segments:[{text:'She decided to '},{gap:{word:'apply'}},{text:' for the scholarship at the last minute.'}]}
+    ]},
+    {items:[
+      {segments:[{text:'Regular exercise can '},{gap:{word:'improve'}},{text:' both your health and your mood.'}]},
+      {segments:[{text:'Please remember to '},{gap:{word:'confirm'}},{text:' your booking before you arrive.'}]},
+      {segments:[{text:'The teacher asked us to '},{gap:{word:'submit'}},{text:' the report by Friday.'}]}
+    ]}
+  ],
+  lt:[
+    {sentence:'The library opens early on weekends.'},
+    {sentence:'Please send me the report by Friday afternoon.'},
+    {sentence:'She studies English every day after work.'},
+    {sentence:'They decided to meet at the station at six.'}
+  ],
+  ir:[
+    {type:'叙事',time:480,
+     paras:['Maya loved drawing, and she never went anywhere without her sketchbook. One Tuesday morning, she packed her backpack for school and checked that her favorite pen was inside. On the bus, she reached for her sketchbook to draw the passing trees, but it was not there. Her heart sank, because that notebook had all her best drawings from the past year.',
+      'She remembered taking it out during lunch the day before, when she showed her friend Leo a picture of a cat. After that, she put it on the table to get more food. Leo told her to wait while he finished his sandwich, but Maya hurried to join a game outside. She realized that she must have left the notebook behind in the cafeteria.',
+      'After school, Maya walked straight to the cafeteria and found it closed. A janitor was cleaning the tables and asked her what she had lost. Maya described the notebook, and the janitor smiled. Someone had handed it to the office that morning. When Maya got the notebook back, she promised herself she would always keep it in her backpack, zipped up tight.'],
+     q1:{blanks:[
+       {p:0,word:'checked',options:['checked','cleaned','measured','pressed'],answer:0},
+       {p:0,word:'reached',options:['reached','waited','looked','returned'],answer:0},
+       {p:1,word:'remembered',options:['remembered','forgot','imagined','decided'],answer:0},
+       {p:2,word:'described',options:['described','explained','mentioned','repeated'],answer:0},
+       {p:2,word:'promised',options:['promised','warned','taught','ordered'],answer:0}],
+      pool:['checked','reached','remembered','described','promised','opened','looked','ordered']},
+     q2:{p:1,sentence:'Leo told her to wait while he finished his sandwich, but Maya hurried to join a game outside.',
+      options:['Leo told her to wait while he finished his sandwich, but Maya hurried to join a game outside.','Leo asked her to stay and watch the birds by the window.','They decided to leave together and walk home in the afternoon.','Maya told him about her plan to visit the museum on Saturday.'],answer:0},
+     q3:{question:'According to the story, where did Maya think she had left her sketchbook?',answer:'left the notebook behind in the cafeteria'},
+     q4:{question:'What did Maya promise herself at the end of the story?',answer:'keep it in her backpack'},
+     q5:{question:'What is the main idea of the story?',options:['Maya lost her sketchbook and learned to be more careful with her things.','Maya wanted to draw better pictures of trees and cats.','The school cafeteria closes early every afternoon.','Leo helped Maya find a new sketchbook at the store.'],answer:0},
+     q6:{options:['Maya\'s Missing Sketchbook','How to Draw a Cat','A Trip to the Cafeteria','Leo\'s Favorite Sandwich'],answer:0}},
+    {type:'说明',time:420,
+     paras:['Sleep is a basic need for every human being, yet scientists still do not fully understand why we do it. What we do know is that sleep plays a central role in memory. During deep sleep, the brain sorts through the information we gathered during the day, deciding what to keep and what to forget.',
+      'Sleep also helps the body repair itself. While we rest, the immune system produces important cells that fight off illness, and the muscles relax and recover. People who do not get enough sleep over a long period are more likely to feel stressed, catch colds, and find it hard to concentrate.',
+      'Experts recommend that adults get about seven to nine hours of sleep every night. To improve your sleep, they suggest keeping a regular schedule, avoiding screens before bed, and making your bedroom dark and quiet. Even small changes, such as going to bed at the same time each night, can make a big difference to your health.'],
+     q1:{blanks:[
+       {p:0,word:'memory',options:['memory','hunger','balance','vision'],answer:0},
+       {p:0,word:'sorts',options:['sorts','mixes','deletes','hides'],answer:0},
+       {p:1,word:'repair',options:['repair','replace','remove','record'],answer:0},
+       {p:2,word:'recommend',options:['recommend','refuse','require','reduce'],answer:0},
+       {p:2,word:'schedule',options:['schedule','recipe','salary','license'],answer:0}],
+      pool:['memory','sorts','repair','recommend','schedule','balance','replace','require']},
+     q2:{p:2,sentence:'Even small changes, such as going to bed at the same time each night, can make a big difference to your health.',
+      options:['Even small changes, such as going to bed at the same time each night, can make a big difference to your health.','Buying a new mattress is the most expensive way to sleep better.','Most people prefer to sleep during the day.','Animals do not need to sleep at all.'],answer:0},
+     q3:{question:'According to the passage, what does the immune system do while we sleep?',answer:'the immune system produces important cells'},
+     q4:{question:'What do experts suggest avoiding before bed?',answer:'avoiding screens before bed'},
+     q5:{question:'What is the main idea of the passage?',options:['Sleep is important for memory, health, and daily functioning.','Everyone should buy a comfortable new bed.','Scientists now understand everything about sleep.','Children need less sleep than adults.'],answer:0},
+     q6:{options:['Why Sleep Matters for Health','The Best Time to Wake Up','A History of Science','How to Sleep During Class'],answer:0}}
+  ],
+  il:[
+    {scenario:'Scenario: You are a student who is interested in research, and you would like to know if there are any opportunities to work as a lab assistant in the Language and Memory Lab. The professor is in the Linguistics department and is doing research on second language acquisition.',
+     summary_time:75,
+     turns:[
+       {speaker:'Professor',line:'Hi there! What can I do for you?',
+        options:['Hi, Professor. I saw a job posting for a research assistant and I was wondering if it would be a good idea for me to apply.',"Hi, Professor. I'm a student in the Finance department and I wanted to know if there are any openings for part-time jobs.",'Hi, Professor. I wanted to ask if you knew of any opportunities to work as a lab assistant in the Language and Memory Lab.',"Professor, I'm a student in your department and I wanted to ask you about your research."],answer:2},
+       {speaker:'Professor',line:"We're actually looking for a lab assistant right now. Are you interested?",
+        options:["Yes, I am! I'm very interested in linguistics research and I would love to work in your lab.","Yes, I've taken a few courses in the department before.",'Not really, I was just asking out of curiosity.','Maybe, but I want to know the salary first.'],answer:0},
+       {speaker:'Professor',line:"Excellent! We'll have an opening starting next week if you're still interested.",
+        options:["Yes, absolutely! I'm available to answer questions later today or tomorrow.",'Yes, definitely. Thank you for giving me the opportunity to take the class.',"Yes, I'm still interested! Thank you so much for this opportunity!",'Yes, definitely! Thanks for giving me the opportunity to do this independent study.'],answer:2},
+       {speaker:'Professor',line:'Before you start, do you have any experience with lab work?',
+        options:["I've done a few lab courses in the department, but not a research lab before.",'No, and I am not sure I can learn it.',"I'd rather not work in the lab at all.",'Experience does not matter for this kind of work.'],answer:0},
+       {speaker:'Professor',line:"That's fine. We'll train you on the equipment. Can you start on Monday?",
+        options:['Yes, I can start on Monday. Thank you so much for this opportunity!',"I'm not sure what time Monday is.","I'll think about it and let you know.",'Can you start instead?'],answer:0}
+     ]},
+    {scenario:'Scenario: You are a student in a chemistry class. You have been unable to attend class in person this week because of a sudden change in your work schedule. You want to know if your professor can provide recordings of the lectures online so that you can continue to follow along with the class.',
+     summary_time:75,
+     turns:[
+       {speaker:'Professor',line:'Hello! How can I help you?',
+        options:["Professor, I'm sorry to bother you. I'm having some difficulty with the online system.",'Professor, I was not able to attend class this week because my work schedule changed. I was wondering if the lectures are recorded.','Professor, can I get an extension on the homework?',"Professor, I'd like to change my grade."],answer:1},
+       {speaker:'Professor',line:"You've been keeping up with the assignments, right?",
+        options:["Yes, I've submitted everything on time.",'No, I have not done any of them.',"I'm not in this class anymore.",'I do not know what assignments you mean.'],answer:0},
+       {speaker:'Professor',line:"That's good. The lecture recordings are available to students who are registered for the class.",
+        options:['Okay, great. How do I sign up for the project?','Oh, okay. Can you tell me where to find them?','That book sounds helpful. Can I get it at the library?',"Oh, okay. Is there anywhere I can get my own copies of those books?"],answer:1},
+       {speaker:'Professor',line:"Sure. They're in the folder called 'Lectures' and I have them organized by class date.",
+        options:['Thanks for reviewing my paper, Professor!','Thank you for making an exception.',"Okay, I'll try it. Thanks, Professor!",'Thank you, that is really helpful. I will check the folder tonight.'],answer:3},
+       {speaker:'Professor',line:'Let me know if you have any trouble accessing them.',
+        options:['I will. Thanks again for your help!','Okay, bye.','When is the exam?','Can I have extra credit?'],answer:0}
+     ]}
+  ],
+  sp:PHOTOS.slice(),
+  wp:PHOTOS.slice(),
+  rtsp:[
+    {topic:'Describe your favorite restaurant and what you usually order there.'},
+    {topic:'Talk about a movie or a book you enjoyed recently and explain why.'},
+    {topic:'What is something you would like to learn in the next year?'}
+  ],
+  isp:[
+    {opener:'Hi! Let us practice together. What did you do this morning?',target:6,
+     fallback:['What part did you enjoy the most?','What are your plans for the rest of the day?','If you could change one thing about your day, what would it be?','What would you like to do tomorrow?','Tell me more about why that matters to you.']},
+    {opener:'What kind of job would you like to have in the future?',target:6,
+     fallback:['What skills do you think you need for that job?','How do you plan to learn those skills?','What would you say to someone who wants the same job?','What is the most important thing you have learned so far?','Why does that appeal to you?']}
+  ],
+  ss:[
+    {topic:'Describe a person who has influenced you and explain why.'},
+    {topic:'Talk about a skill you would like to learn and why it matters to you.'},
+    {topic:'Describe a place you love to visit and what makes it special.'}
+  ],
+  iw:[
+    {prompt:'Many schools have started to reduce the amount of homework they give students. Supporters say students need more time for hobbies and rest. Critics worry that students may forget what they learn in class.'},
+    {prompt:'Some companies now allow employees to work from home every day. Supporters value the flexibility, while managers worry about teamwork and company culture.'}
+  ],
+  ws:[
+    {topic:'What does success mean to you? Explain your view with examples.'},
+    {topic:'If you could change one thing about your city, what would it be and why?'}
+  ]
+};
+
+// ================= DOM =================
+const qArea=document.getElementById('questionArea');
+const resultArea=document.getElementById('resultArea');
+const typeTabs=document.getElementById('typeTabs');
+let currentType=null,currentQ=null,timerId=null,timeLeft=0;
+let bandFilter='all';
+const ispAnswers={};
+const ilState={turn:-1,choices:[],selected:null};
+const ispState={idx:0,q:'',list:[]};
+const irState={q:null,step:0,points:0,answers:[],sel:'',start:0};
+const rsState={idx:0,ans:[]};
+const fibwState={idx:0,ans:[]};
+
+// ================= 工具 =================
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function rnd(a){return a[Math.floor(Math.random()*a.length)];}
+function pad(n){return String(n).padStart(2,'0');}
+function fmt(sec){return Math.floor(sec/60)+':'+pad(sec%60);}
+function startTimer(sec,onDone){
+  clearTimer();timeLeft=sec;
+  const el=document.getElementById('timer');
+  const tick=()=>{
+    if(el){el.textContent=fmt(timeLeft);el.classList.toggle('warn',timeLeft<=10);}
+    if(timeLeft<=0){clearInterval(timerId);timerId=null;if(onDone)onDone();return;}
+    timeLeft--;
+  };
+  tick();timerId=setInterval(tick,1000);
+}
+function clearTimer(){if(timerId){clearInterval(timerId);timerId=null;}}
+const lastIdx={};
+function nextQuestion(type){
+  const bank=(type==='wp'||type==='sp')?photoBankFiltered():BANK[type];
+  if(!bank.length)return null;
+  if(bank.length<=1){lastIdx[type]=0;return bank[0];}
+  let idx;
+  do{idx=Math.floor(Math.random()*bank.length);}while(idx===lastIdx[type]);
+  lastIdx[type]=idx;return bank[idx];
+}
+function speak(text,rate){
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-US';u.rate=rate||0.9;
+  const en=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.startsWith('en'));
+  if(en)u.voice=en;
+  speechSynthesis.cancel();speechSynthesis.speak(u);
+}
+function startRecord(finalCb,errCb,continuous){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){errCb('当前浏览器不支持麦克风，请用 Chrome/Edge');return;}
+  const rec=new SR();window.__rec=rec;
+  rec.lang='en-US';rec.continuous=!!continuous;rec.interimResults=true;rec.maxAlternatives=1;
+  let final='';
+  rec.onresult=e=>{let t='';for(let i=0;i<e.results.length;i++){if(e.results[i].isFinal)t+=' '+e.results[i][0].transcript;}if(t)final=t.trim();};
+  rec.onend=()=>{if(finalCb)finalCb(final);};
+  rec.onerror=e=>{errCb('录音失败：'+e.error);};
+  rec.start();
+}
+function stopRecord(){if(window.__rec){try{window.__rec.stop();}catch(e){}}}
+function normWords(s){return s.toLowerCase().replace(/[^a-z'\s]/g,' ').split(/\s+/).filter(Boolean);}
+
+// ================= 渲染入口 =================
+function setActiveTab(type){document.querySelectorAll('#typeTabs button').forEach(b=>b.classList.toggle('active',b.dataset.key===type));}
+function renderCurrent(type,q){clearTimer();resultArea.innerHTML='';RENDERERS[type](q);}
+function showType(type){
+  currentType=type;clearTimer();resultArea.innerHTML='';
+  currentQ=nextQuestion(type);
+  setActiveTab(type);
+  if(currentQ)RENDERERS[type](currentQ);
+}
+function cardHead(label,sub,t,badge){
+  return `<div class="q-head"><span class="q-type">${label} <span class="q-sub">${sub}</span>${badge||''}</span><span class="timer" id="timer">${fmt(t)}</span></div>`;
+}
+function aiBtn(){return `<button id="aiBtn" class="ai">🔄 AI 出题</button>`;}
+function photoHtml(q){
+  if(q.photo)return `<img class="photo-img" src="${esc(q.photo)}" alt="photo">`;
+  return `<div class="photo-card">🖼 ${esc(q.scene)}</div>`;
+}
+const BAND_LABEL={60:'60–85 · B1',90:'90–115 · B2',120:'120–160 · C1/C2'};
+function bandLabel(b){return BAND_LABEL[b]||b;}
+function bandBadge(q){return q.band?` <span class="band">DET ${bandLabel(q.band)}</span>`:'';}
+function photoBankFiltered(){
+  let bank=BANK.wp;
+  if(bandFilter!=='all'){const f=bank.filter(it=>it.band===bandFilter);if(f.length)bank=f;}
+  return bank;
+}
+
+// ================= 词汇判断 RS =================
+function renderRS(q){
+  rsState.idx=0;rsState.ans=[];
+  qArea.innerHTML=`<div class="card">${cardHead(TC.rs.label,TC.rs.sub,5)}
+    <p class="q-instr">判断下面的词是不是真实存在的英语单词，点「是」或「否」。每词限时 5 秒。</p>
+    <div class="sentence" id="rsWord"></div>
+    <div class="q-actions">${aiBtn()}<button id="yesBtn" class="primary">是（真实单词）</button><button id="noBtn" class="ghost">否</button></div>
+    <div class="ir-progress"><div class="ir-track"><div class="ir-bar" id="rsBar" style="width:0%"></div></div><span id="rsProg">1 / ${q.words.length}</span></div>
+    <div class="captured" id="rsFb"></div>
+  </div>`;
+  showRSWord(q);
+  qArea.querySelector('#yesBtn').onclick=()=>rsAnswer(q,true);
+  qArea.querySelector('#noBtn').onclick=()=>rsAnswer(q,false);
+}
+function showRSWord(q){
+  document.getElementById('rsWord').textContent=q.words[rsState.idx].w;
+  document.getElementById('rsProg').textContent=(rsState.idx+1)+' / '+q.words.length;
+  document.getElementById('rsBar').style.width=(rsState.idx/q.words.length*100)+'%';
+  document.getElementById('rsFb').textContent='';
+  startTimer(5,()=>rsAnswer(q,null));
+}
+function rsAnswer(q,val){
+  clearTimer();
+  rsState.ans.push({w:q.words[rsState.idx].w,real:q.words[rsState.idx].real,val});
+  rsState.idx++;
+  if(rsState.idx>=q.words.length){rsFinish(q);return;}
+  showRSWord(q);
+}
+function rsFinish(q){
+  clearTimer();
+  const correct=rsState.ans.filter(a=>a.val===a.real).length;
+  const score=Math.round(correct/q.words.length*100);
+  if(document.body.classList.contains('testing')){testNext();return;}
+  const wrong=rsState.ans.filter(a=>a.val!==a.real).map(a=>a.w);
+  const note=`正确 ${correct}/${q.words.length}（${score}%）`+(wrong.length?` · 答错：${wrong.join('、')}`:'');
+  showResult('词汇判断',detFromScore(score),note);logHistory('rs',detFromScore(score),note);
+}
+
+// ================= 完形打字 FIB（Read & Complete）=================
+function fibShow(word){const L=word.length;return L<=3?1:(L<=6?2:3);}
+function fibSeg(seg){
+  if(seg.gap){const w=seg.gap.word,n=fibShow(w);return `<span class="fib" data-word="${esc(w)}">${esc(w.slice(0,n))}<input class="fib-input" data-word="${esc(w)}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="${esc(w)}"></span>`;}
+  return esc(seg.text);
+}
+function renderFIB(q){
+  const body=q.segments.map(fibSeg).join('');
+  qArea.innerHTML=`<div class="card">${cardHead(TC.fib.label,TC.fib.sub,q.time||TC.fib.time)}
+    <p class="q-instr">补全每个单词缺失的部分（首字母已给出）。限时 3 分钟。</p>
+    <div class="passage">${body}</div>
+    <div class="q-actions">${aiBtn()}<button id="startBtn" class="primary">开始</button><button id="submitBtn" disabled>提交</button></div>
+  </div>`;
+  qArea.querySelector('#startBtn').onclick=()=>{qArea.querySelector('#startBtn').disabled=true;qArea.querySelector('#submitBtn').disabled=false;startTimer(q.time||TC.fib.time,()=>submitFIB(q));};
+  qArea.querySelector('#submitBtn').onclick=()=>submitFIB(q);
+}
+function checkFib(el,qArea){
+  const word=el.dataset.word;
+  const input=el.querySelector('input').value.trim().toLowerCase();
+  const ok=input===word.toLowerCase();
+  if(ok)input.className?null:el.querySelector('input').classList.add('ok');
+  else el.querySelector('input').classList.add('bad');
+  return ok;
+}
+function submitFIB(q){
+  clearTimer();
+  const els=[...qArea.querySelectorAll('.fib')];
+  let correct=0;const wrong=[];
+  els.forEach(el=>{
+    const word=el.dataset.word;
+    const input=el.querySelector('input').value.trim().toLowerCase();
+    if(input===word.toLowerCase()){correct++;el.querySelector('input').classList.add('ok');}
+    else{wrong.push(word);el.querySelector('input').classList.add('bad');}
+  });
+  const score=Math.round(correct/els.length*100);
+  const note=`正确 ${correct}/${els.length}（${score}%）`+(wrong.length?` · 答错：${wrong.join('、')}`:'');
+  showResult('完形打字',detFromScore(score),note);logHistory('fib',detFromScore(score),note);
+}
+
+// ================= 选词填空 FIBW（Fill in the Blanks）=================
+function renderFIBW(q){
+  fibwState.idx=0;fibwState.ans=[];
+  qArea.innerHTML=`<div class="card">${cardHead(TC.fibw.label,TC.fibw.sub,20)}
+    <p class="q-instr">补全句子中不完整的单词（首字母已给出）。每句限时 20 秒，输完按回车或点「下一句」。</p>
+    <div class="passage" id="fibwPassage"></div>
+    <div class="q-actions">${aiBtn()}<button id="fibwNext" class="primary">下一句 →</button></div>
+    <div class="ir-progress"><div class="ir-track"><div class="ir-bar" id="fibwBar" style="width:0%"></div></div><span id="fibwProg">1 / ${q.items.length}</span></div>
+    <div class="captured" id="fibwFb"></div>
+  </div>`;
+  showFIBWItem(q);
+  qArea.querySelector('#fibwNext').onclick=()=>fibwAnswer(q);
+  const inp=qArea.querySelector('.fib input');
+  if(inp)inp.addEventListener('keydown',e=>{if(e.key==='Enter')fibwAnswer(q);});
+}
+function showFIBWItem(q){
+  const it=q.items[fibwState.idx];
+  document.getElementById('fibwPassage').innerHTML=it.segments.map(fibSeg).join('');
+  document.getElementById('fibwProg').textContent=(fibwState.idx+1)+' / '+q.items.length;
+  document.getElementById('fibwBar').style.width=(fibwState.idx/q.items.length*100)+'%';
+  document.getElementById('fibwFb').textContent='';
+  const inp=qArea.querySelector('.fib input');
+  if(inp)inp.focus();
+  startTimer(20,()=>fibwAnswer(q));
+}
+function fibwAnswer(q){
+  clearTimer();
+  const it=q.items[fibwState.idx];
+  const gap=it.segments.find(s=>s.gap);
+  const inp=qArea.querySelector('.fib input');
+  const word=inp?inp.value.trim().toLowerCase():'';
+  const ok=!!gap&&word===gap.gap.word.toLowerCase();
+  fibwState.ans.push(ok);
+  fibwState.idx++;
+  if(fibwState.idx>=q.items.length){fibwFinish(q);return;}
+  showFIBWItem(q);
+}
+function fibwFinish(q){
+  clearTimer();
+  const correct=fibwState.ans.filter(Boolean).length;
+  const score=Math.round(correct/q.items.length*100);
+  if(document.body.classList.contains('testing')){testNext();return;}
+  const wrong=q.items.map((it,i)=>({it,i})).filter(x=>!fibwState.ans[x.i]).map(x=>x.it.segments.find(s=>s.gap).gap.word);
+  const note=`正确 ${correct}/${q.items.length}（${score}%）`+(wrong.length?` · 答错：${wrong.join('、')}`:'');
+  showResult('选词填空',detFromScore(score),note);logHistory('fibw',detFromScore(score),note);
+}
+
+// ================= 听写 LT =================
+function renderLT(q){
+  qArea.innerHTML=`<div class="card">${cardHead(TC.lt.label,TC.lt.sub,q.time||TC.lt.time)}
+    <p class="q-instr">点「播放」听句子（最多 3 次），把听到的内容打进框里再提交。限时 1 分钟。</p>
+    <div class="q-actions">${aiBtn()}<button id="playBtn" class="primary">🔊 播放</button><button id="submitBtn" disabled>提交</button></div>
+    <textarea id="ltInput" placeholder="在这里输入你听到的英文…" style="margin-top:14px"></textarea>
+  </div>`;
+  let plays=0,started=false;
+  qArea.querySelector('#playBtn').onclick=()=>{
+    if(plays<3){speak(q.sentence);plays++;qArea.querySelector('#submitBtn').disabled=false;}
+    if(!started){started=true;startTimer(q.time||TC.lt.time,()=>submitLT(q));}
+  };
+  qArea.querySelector('#submitBtn').onclick=()=>submitLT(q);
+}
+function submitLT(q){
+  clearTimer();
+  const input=qArea.querySelector('#ltInput').value.trim();
+  if(!input){showResult('听写',0,'没有输入内容。原句：'+q.sentence);logHistory('lt',0,'空答');return;}
+  const orig=normWords(q.sentence),typed=normWords(input);
+  const matched=orig.filter(w=>typed.includes(w)).length;
+  const score=Math.round(matched/orig.length*100);
+  showResult('听写',detFromScore(score),`单词命中 ${matched}/${orig.length}（${score}%） · 原句：「${q.sentence}」`);
+  logHistory('lt',detFromScore(score),`命中${matched}/${orig.length}`);
+}
+
+// ================= 互动阅读 IR =================
+function renderIR(q){
+  irState.q=q;irState.step=0;irState.points=0;irState.answers=[];irState.sel='';
+  clearTimer();
+  qArea.innerHTML=`<div class="card ir-green">${cardHead('互动阅读 · '+q.type,TC.ir.sub,q.time)}
+    <div class="ir-progress"><div class="ir-track"><div class="ir-bar" id="irBar" style="width:16%"></div></div><span id="irProg">1 / 6</span></div>
+    <div class="passage-scroll ir-passage" id="irPassage"></div>
+    <div class="q-actions">${aiBtn()}</div>
+    <div id="irQuestion"></div>
+  </div>`;
+  irState.start=Date.now();
+  showIRStep();
+  startTimer(q.time,()=>irAutoSubmit());
+}
+function renderIRPassage(mode){
+  const q=irState.q;
+  const paras=q.paras.map((p,i)=>{
+    let html=esc(p);
+    if(mode==='q1'){
+      q.q1.blanks.filter(b=>b.p===i).forEach(b=>{
+        html=html.replace(esc(b.word),`<span class="ir-dropzone" data-expected="${esc(b.word)}">＋</span>`);
+      });
+    }else if(mode==='q2'&&q.q2.p===i){
+      html=html.replace(esc(q.q2.sentence),`<span class="ir-dropzone ir-dz-s" data-expected="${esc(q.q2.options[q.q2.answer])}">＋</span>`);
+    }
+    if(mode==='hl'&&irState.sel){
+      const s=esc(irState.sel);
+      const si=html.indexOf(s);
+      if(si>=0){html=html.slice(0,si)+'<mark>'+s+'</mark>'+html.slice(si+s.length);}
+    }
+    return `<p>${html}</p>`;
+  });
+  const pass=document.getElementById('irPassage');
+  if(pass)pass.innerHTML=paras.join('');
+}
+function normT(t){return String(t||'').replace(/\s+/g,' ').trim().toLowerCase();}
+function irFb(msg){
+  const el=document.getElementById('irFb');
+  if(el)el.textContent=msg;
+}
+function showIRStep(){
+  const bar=document.getElementById('irBar');
+  const prog=document.getElementById('irProg');
+  if(!bar)return;
+  prog.textContent=Math.min(irState.step+1,6)+' / 6';
+  bar.style.width=(Math.min(irState.step,6)/6*100)+'%';
+  if(irState.step>=6){showIRResult();return;}
+  const q=irState.q,s=irState.step;
+  const el=document.getElementById('irQuestion');
+  if(s===0)return renderIRQ1(el);
+  if(s===1)return renderIRQ2(el);
+  if(s===2||s===3)return renderIRHL(el,s);
+  if(s===4)return renderIRPick(el,'主旨 · Identify the Idea',q.q5.question,q.q5.options,q.q5.answer);
+  if(s===5)return renderIRPick(el,'标题 · Title the Passage','为这篇文章选择一个最合适的标题。',q.q6.options,q.q6.answer);
+}
+function shuffle(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function renderIRQ1(el){
+  const q=irState.q;
+  renderIRPassage('q1');
+  const pool=q.q1.pool&&q.q1.pool.length?q.q1.pool:q.q1.blanks.map(b=>b.options[b.answer]);
+  el.innerHTML=`<div class="ir-q"><span class="qt">第 1 题 · Complete the Sentences</span>
+    <p>把单词拖进短文对应的空格（或先点单词、再点空格）。</p>
+    <div class="ir-pool">${shuffle(pool).map(w=>`<button class="ir-chip" draggable="true" data-val="${esc(w)}">${esc(w)}</button>`).join('')}</div>
+    <div class="ir-fb" id="irFb"></div></div>`;
+  irWireDnD();
+}
+function renderIRQ2(el){
+  const q=irState.q;
+  renderIRPassage('q2');
+  el.innerHTML=`<div class="ir-q"><span class="qt">第 2 题 · Complete the Passage</span>
+    <p>把合适的一句话拖进短文空白处（或先点句子、再点空白）。</p>
+    <div class="ir-pool">${shuffle(q.q2.options.map((_,i)=>i)).map(i=>`<button class="ir-chip ir-chip-s" draggable="true" data-val="${esc(q.q2.options[i])}">${esc(q.q2.options[i])}</button>`).join('')}</div>
+    <div class="ir-fb" id="irFb"></div></div>`;
+  irWireDnD();
+}
+function irWireDnD(){
+  let sel=null;
+  const chips=[...document.querySelectorAll('.ir-chip')];
+  const zones=[...document.querySelectorAll('.ir-dropzone')];
+  if(!zones.length)return;
+  const step=irState.step; // 0=Q1 1=Q2
+  const place=(chip,zone)=>{
+    if(zone.dataset.filled||chip.classList.contains('used'))return;
+    const v=chip.dataset.val;
+    if(zone.dataset.expected===v){
+      zone.textContent=(step===1)?'✓ 已填入':v;
+      zone.classList.add('filled','ok');zone.dataset.filled=v;
+      chip.classList.add('used');chip.disabled=true;
+      if([...document.querySelectorAll('.ir-dropzone')].every(z=>z.dataset.filled))finishStep();
+    }else{
+      zone.classList.add('bad');setTimeout(()=>zone.classList.remove('bad'),500);
+    }
+  };
+  const finishStep=()=>{
+    const z=[...document.querySelectorAll('.ir-dropzone')];
+    const allGood=z.every(x=>x.dataset.filled===x.dataset.expected);
+    irState.points+=allGood?1:0;irState.answers.push(allGood);
+    irFb('第 '+(step+1)+' 题 '+(allGood?'正确 ✓':'有空格填错 ✗'));
+    setTimeout(()=>{irState.step++;showIRStep();},1400);
+  };
+  chips.forEach(chip=>{
+    chip.onclick=()=>{if(chip.classList.contains('used'))return;chips.forEach(c=>c.classList.remove('sel'));chip.classList.add('sel');sel=chip;};
+    chip.ondragstart=(e)=>{sel=chip;e.dataTransfer.setData('text/plain',chip.dataset.val);};
+  });
+  zones.forEach(zone=>{
+    zone.onclick=()=>{if(sel&&!sel.classList.contains('used'))place(sel,zone);};
+    zone.ondragover=(e)=>{e.preventDefault();};
+    zone.ondrop=(e)=>{e.preventDefault();const v=e.dataTransfer.getData('text/plain');const chip=chips.find(c=>c.dataset.val===v&&!c.classList.contains('used'));if(chip)place(chip,zone);};
+  });
+}
+function renderIRHL(el,s){
+  const q=irState.q,hl=(s===2)?q.q3:q.q4;
+  renderIRPassage('plain');
+  el.innerHTML=`<div class="ir-q"><span class="qt">第 ${s+1} 题 · Highlight the Answer</span>
+    <p>${esc(hl.question)}</p>
+    <p class="hint">在短文里按住鼠标拖动，选中答案所在的位置。</p>
+    <div id="irSelBox" class="hint"></div>
+    <div class="q-actions"><button id="irHlSubmit" class="primary" disabled>提交答案</button></div>
+    <div class="ir-fb" id="irFb"></div></div>`;
+  const pass=document.getElementById('irPassage');
+  pass.onmouseup=()=>{
+    const sel=window.getSelection();
+    if(!sel||sel.isCollapsed)return;
+    const text=sel.toString().trim();
+    if(!text)return;
+    irState.sel=text;
+    renderIRPassage('hl');
+    const box=document.getElementById('irSelBox');
+    if(box)box.innerHTML='你选中了："'+esc(text)+'"';
+    const btn=document.getElementById('irHlSubmit');
+    if(btn)btn.disabled=false;
+  };
+  document.getElementById('irHlSubmit').onclick=()=>{
+    const ok=hl.answer&&normT(irState.sel).indexOf(normT(hl.answer))>=0;
+    irState.points+=ok?1:0;irState.answers.push(ok);
+    irState.sel='';
+    renderIRPassage('plain');
+    pass.onmouseup=null;
+    irFb('第 '+(s+1)+' 题 '+(ok?'正确 ✓':'错误 ✗ 答案应含："'+hl.answer+'"'));
+    setTimeout(()=>{irState.step++;showIRStep();},1700);
+  };
+}
+function renderIRPick(el,label,question,options,answer){
+  renderIRPassage('plain');
+  el.innerHTML=`<div class="ir-q"><span class="qt">${esc(label)}</span>
+    <p>${esc(question)}</p>
+    <div class="opts">${options.map((o,i)=>`<button class="ir-opt" data-i="${i}">${esc(o)}</button>`).join('')}</div>
+    <div class="ir-fb" id="irFb"></div></div>`;
+  el.querySelectorAll('.ir-opt').forEach(b=>b.onclick=()=>irPickFeedback(el,+b.dataset.i,answer));
+}
+function irPickFeedback(el,chosen,answer){
+  const opts=[...el.querySelectorAll('.ir-opt')];
+  opts.forEach((o,i)=>{if(i===answer)o.classList.add('ir-correct');});
+  if(chosen===answer)opts[chosen].classList.add('ir-correct');
+  else opts[chosen].classList.add('ir-wrong');
+  const ok=(chosen===answer);
+  irState.points+=ok?1:0;irState.answers.push(ok);
+  setTimeout(()=>{irState.step++;showIRStep();},1200);
+}
+function irAutoSubmit(){
+  irState.step=6;
+  showIRStep();
+}
+function showIRResult(){
+  clearTimer();
+  const used=Math.round((Date.now()-irState.start)/1000);
+  const bar=document.getElementById('irBar');
+  const prog=document.getElementById('irProg');
+  if(bar)bar.style.width='100%';
+  if(prog)prog.textContent='6 / 6';
+  const pass=document.getElementById('irPassage');
+  if(pass)pass.innerHTML='';
+  document.getElementById('irQuestion').innerHTML=`<div class="ir-q"><span class="qt">完成</span>
+    <p><b>得分 ${irState.points}/6</b> · 用时 ${fmt(used)}</p>
+    <div class="q-actions"><button id="irDone" class="primary">${document.body.classList.contains('testing')?'下一题 →':'再来一篇'}</button></div></div>`;
+  logHistory('ir',Math.round(irState.points/6*100),'互动阅读 '+irState.points+'/6 · 用时 '+fmt(used));
+  document.getElementById('irDone').onclick=()=>{
+    if(document.body.classList.contains('testing'))testNext();
+    else showType('ir');
+  };
+}
+
+// ================= 互动听力 IL =================
+function renderIL(q){
+  ilState.turn=-1;ilState.choices=[];ilState.selected=null;
+  qArea.innerHTML=`<div class="card">${cardHead(TC.il.label,TC.il.sub,240)}
+    <p class="q-instr">读场景 → 听对方说话 → 轮到你时选一个最好的回应，逐回合进行；对话结束写 75 秒总结。Listen &amp; Respond 部分限时 4 分钟。</p>
+    <div class="prompt-box" style="text-align:left"><b>Scenario</b><br>${esc(q.scenario)}</div>
+    <div class="chat" id="ilChat"></div>
+    <div id="ilOpts"></div>
+    <div class="q-actions">
+      ${aiBtn()}
+      <button id="startBtn" class="primary">开始对话</button>
+      <button id="nextBtn" class="primary" style="display:none">继续 →</button>
+      <button id="sumBtn" class="ghost" style="display:none">⏱ 开始写总结（75 秒）</button>
+      <button id="submitBtn" class="primary" style="display:none">提交批改</button>
+    </div>
+    <div id="ilSummaryBox" style="display:none">
+      <div class="ir-q"><span class="qt">Summarize the Conversation</span>
+        <p>用 75 秒写一段完整的英文段落总结这段对话（写成完整段落，不要只列要点）。</p>
+        <textarea id="ilSummary" placeholder="Write your summary in English…"></textarea></div>
+    </div>
+  </div>`;
+  qArea.querySelector('#startBtn').onclick=()=>{
+    qArea.querySelector('#startBtn').style.display='none';
+    startTimer(240,()=>{ilState.turn=q.turns.length;showILTurn(q);});
+    ilState.turn=0;
+    showILTurn(q);
+  };
+  qArea.querySelector('#nextBtn').onclick=()=>{
+    if(ilState.selected==null)return;
+    ilState.choices.push(ilState.selected);
+    ilState.selected=null;
+    ilState.turn++;
+    showILTurn(q);
+  };
+  qArea.querySelector('#sumBtn').onclick=()=>{
+    clearTimer();
+    startTimer(q.summary_time||75,()=>{});
+    qArea.querySelector('#sumBtn').style.display='none';
+  };
+  qArea.querySelector('#submitBtn').onclick=()=>submitIL(q);
+}
+function showILTurn(q){
+  const chat=qArea.querySelector('#ilChat');
+  const opts=qArea.querySelector('#ilOpts');
+  const nextBtn=qArea.querySelector('#nextBtn');
+  const sumBtn=qArea.querySelector('#sumBtn');
+  if(ilState.turn>=q.turns.length){
+    clearTimer();
+    nextBtn.style.display='none';
+    sumBtn.style.display='inline-block';
+    qArea.querySelector('#ilSummaryBox').style.display='block';
+    qArea.querySelector('#submitBtn').style.display='inline-block';
+    return;
+  }
+  const t=q.turns[ilState.turn];
+  const bub=document.createElement('div');
+  bub.className='bub a';
+  bub.innerHTML=`<b>${esc(t.speaker||'Professor')}:</b> ${esc(t.line)} <button class="spk small" data-l="${ilState.turn}">🔊</button>`;
+  chat.appendChild(bub);
+  bub.querySelector('.spk').onclick=()=>speak(t.line,0.85);
+  opts.innerHTML=`<div class="ir-q"><span class="qt">Listen &amp; Respond</span><p>你：选一个最好的回应</p>
+    <div class="opts">${t.options.map((o,oi)=>`<label class="opt"><input type="radio" name="ilOpt" value="${oi}"> <span>${esc(o)}</span></label>`).join('')}</div>
+    <div class="il-fb" id="ilFB"></div></div>`;
+  opts.querySelectorAll('input[name=ilOpt]').forEach(inp=>{inp.onchange=()=>{ilState.selected=+inp.value;ilShowFB(t);};});
+  nextBtn.style.display='inline-block';
+}
+function ilShowFB(t){
+  const opts=[...qArea.querySelectorAll('input[name=ilOpt]')];
+  opts.forEach(inp=>{
+    const lab=inp.closest('.opt');
+    const i=+inp.value;
+    if(i===t.answer)lab.classList.add('il-ok');
+    else if(i===ilState.selected)lab.classList.add('il-bad');
+  });
+  const fb=document.getElementById('ilFB');
+  if(fb)fb.textContent=ilState.selected===t.answer?'✓ 正确':('✗ 正确答案：'+t.options[t.answer]);
+}
+async function submitIL(q){
+  clearTimer();
+  let correct=0;const wrong=[];
+  q.turns.forEach((t,i)=>{
+    const c=ilState.choices[i];
+    if(c===t.answer)correct++;
+    else wrong.push(`回合${i+1} 应为：${t.options[t.answer]}`);
+  });
+  const mcScore=Math.round(correct/q.turns.length*100);
+  const summary=(((qArea.querySelector('#ilSummary')||{}).value)||'').trim();
+  let html=`<div class="result"><h3>互动听力</h3><div class="score-line"><span class="big-score">回应题 ${correct}/${q.turns.length}</span><span>（${mcScore}%）</span></div>`;
+  html+=`<div class="comment">${wrong.length?('<p>'+esc('错题：'+wrong.join('；'))+'</p>'):'<p>回应题全对。</p>'}</div>`;
+  if(!summary){html+=`<p class="hint">总结未填写。</p></div>`;resultArea.innerHTML=html;logHistory('il',detFromScore(mcScore),'回应'+correct+'/'+q.turns.length+'，未写总结');return;}
+  resultArea.innerHTML=html+`<p class="hint">总结批改中…</p></div>`;
+  try{
+    const sys=writingSys(['Production','Comprehension']);
+    const user=`对话场景：${q.scenario}\n对话内容（含最佳回应）：\n${q.turns.map(t=>t.speaker+': '+t.line+'\nYou: '+t.options[t.answer]).join('\n')}\n\n学生的总结：\n${summary}`;
+    const raw=await callDS([{role:'system',content:sys},{role:'user',content:user}],0.2);
+    const r=parseJSON(raw);
+    if(r){
+      const cards=[['Literacy','literacy'],['Comprehension','comprehension'],['Conversation','conversation'],['Production','production']].map(([n,k])=>r[k]!=null?dimCard(n,round5(r[k])):'').join('');
+      const tag=r.overall!=null?('DET '+round5(r.overall)+' · '+cefrOf(r.overall)):'格式异常';
+      resultArea.innerHTML=html+`<p class="hint">总结批改（${tag}）：</p><div class="dims">${cards}</div><div class="comment"><p>${esc(r.comment||'')}</p>${r.priority?`<p class="priority">🎯 ${esc(r.priority)}</p>`:''}</div></div>`;
+    }
+    else{resultArea.innerHTML=html+`<p class="hint">总结批改格式异常。</p></div>`;}
+  }catch(err){resultArea.innerHTML=html+`<p class="hint err">总结批改失败：${esc(err.message)}</p></div>`;}
+  logHistory('il',detFromScore(mcScore),`回应${correct}/${q.turns.length}`);
+}
+
+// ================= 看图说话 SP =================
+function renderSP(q){
+  renderSpeakCard(TC.sp.label,TC.sp.sub,photoHtml(q),`你的朋友刚发来这张照片。用英文说 1–2 句话描述它。`,`照片内容：${q.scene}\n要求：用 1–2 句英文口头描述这张照片。`,'sp',q);
+}
+// ================= 读后口说 RTSP =================
+function renderRTSP(q){
+  renderSpeakCard(TC.rtsp.label,TC.rtsp.sub,`<div class="sentence">${esc(q.topic)}</div>`,`先读题目，然后开口回答，尽量说到 1 分钟以上。`,`题目：${q.topic}\n要求：读题后口头回答。`,'rtsp',q);
+}
+// ================= 口说样题 SS =================
+function renderSS(q){
+  renderSpeakCard(TC.ss.label,TC.ss.sub,`<div class="sentence">${esc(q.topic)}</div>`,`对着题目连续说 1–3 分钟，尽量完整展开观点。`,`题目：${q.topic}\n要求：连续用英文说 1–3 分钟，完整表达观点和理由。`,'ss',q);
+}
+function renderSpeakCard(label,sub,main,inst,gradingInstr,key,q){
+  const hasSR=!!(window.SpeechRecognition||window.webkitSpeechRecognition);
+  const prep=key==='ss'?30:20;
+  qArea.innerHTML=`<div class="card">${cardHead(label,sub,q.time||TC[key].time,key==='sp'?bandBadge(q):'')}
+    ${main}
+    <p class="q-instr">${esc(inst)}${hasSR?`（先点「准备」读题，再开始录音；建议至少说 30 秒${key==='ss'?'，最多 3 分钟':''}）`:''}</p>
+    <div class="q-actions">
+      ${aiBtn()}
+      ${hasSR?`<button id="prepBtn" class="primary">⏳ 准备 ${prep} 秒</button><button id="recBtn" class="primary" style="display:none">🎤 开始录音</button><button id="stopBtn" class="ghost" style="display:none">⏹ 结束</button>`:''}
+      <button id="submitBtn" class="primary">提交批改</button>
+    </div>
+    <textarea id="speakText" placeholder="转写会出现在这里；不支持麦克风时可直接打字提交…" style="margin-top:12px"></textarea>
+    <p class="captured" id="captured"></p>
+  </div>`;
+  if(hasSR){
+    qArea.querySelector('#prepBtn').onclick=()=>{
+      const pb=qArea.querySelector('#prepBtn');
+      pb.disabled=true;
+      document.getElementById('captured').textContent='读题准备中…';
+      startTimer(prep,()=>{
+        pb.style.display='none';
+        qArea.querySelector('#recBtn').style.display='inline-block';
+        qArea.querySelector('#stopBtn').style.display='inline-block';
+        document.getElementById('captured').textContent='可以开始录音了。';
+      });
+    };
+    qArea.querySelector('#recBtn').onclick=()=>{
+      qArea.querySelector('#recBtn').disabled=true;
+      startTimer(q.time||TC[key].time,()=>stopRecord());
+      document.getElementById('captured').textContent='录音中…（至少说 30 秒）';
+      startRecord(tr=>{clearTimer();qArea.querySelector('#speakText').value=tr;document.getElementById('captured').textContent='录音完成，可点「提交批改」。';},msg=>{clearTimer();document.getElementById('captured').textContent=msg;},true);
+    };
+    qArea.querySelector('#stopBtn').onclick=()=>{clearTimer();stopRecord();};
+  }
+  qArea.querySelector('#submitBtn').onclick=()=>submitSpeak(key,q,gradingInstr);
+}
+async function submitSpeak(key,q,instr){
+  clearTimer();stopRecord();
+  const text=qArea.querySelector('#speakText').value.trim();
+  if(!text){showResult(TC[key].label,0,'没有内容。');logHistory(key,0,'空答');return;}
+  qArea.querySelector('#submitBtn').disabled=true;qArea.querySelector('#submitBtn').textContent='批改中…';
+  const sys=speakSys(['Conversation','Production']);
+  try{
+    const raw=await callDS([{role:'system',content:sys},{role:'user',content:instr+'\n\n学生的口语转写：\n'+text}],0.2);
+    const r=parseJSON(raw);
+    showResult(TC[key].label,r?r.overall:null,`转写：${text}`,r||{});
+    logHistory(key,r?r.overall:0,'口语批改');
+  }catch(err){showResult(TC[key].label,null,'批改失败：'+err.message+'\n转写：'+text);}
+  const btn=qArea.querySelector('#submitBtn');if(btn){btn.disabled=false;btn.textContent='提交批改';}
+}
+
+// ================= 互动口说 ISP =================
+function renderISP(q){
+  ispAnswers={};
+  ispState.idx=0;
+  ispState.q=q.opener||'Hi! Let us practice together. What did you do this morning?';
+  ispState.list=[ispState.q];
+  const target=q.target||6;
+  qArea.innerHTML=`<div class="card">${cardHead(TC.isp.label,TC.isp.sub,TC.isp.time)}
+    <p class="q-instr">Bea 会问你问题：点「🎤 开始回答」录音（35 秒）。你的回答会影响下一个问题（和真实考试一样），目标 ${target} 题，随时可「结束并批改」。</p>
+    <div class="sentence" id="ispQ">${esc(ispState.q)} <button class="spk small" id="ispPlay">🔊</button></div>
+    <div class="q-actions">
+      <button id="recBtn" class="primary">🎤 开始回答 (35s)</button>
+      <button id="stopBtn" class="ghost">⏹ 停止</button>
+      ${aiBtn()}
+      <button id="submitBtn" class="primary">结束并批改</button>
+    </div>
+    <p class="captured" id="captured"></p>
+    <div id="ispLog" class="captured"></div>
+  </div>`;
+  qArea.querySelector('#ispPlay').onclick=()=>speak(ispState.q,0.9);
+  let recording=false;
+  qArea.querySelector('#recBtn').onclick=()=>{
+    if(recording)return;
+    recording=true;
+    qArea.querySelector('#recBtn').disabled=true;
+    document.getElementById('captured').textContent='录音中…';
+    startTimer(35,()=>stopRecord());
+    startRecord(tr=>{
+      recording=false;
+      const b=qArea.querySelector('#recBtn');if(b)b.disabled=false;
+      clearTimer();
+      const idx=ispState.idx;
+      ispAnswers[idx]=tr;
+      appendISPLog('You',tr);
+      document.getElementById('captured').textContent='回答已记录。';
+      if(idx+1>=target){document.getElementById('captured').textContent='已完成 '+target+' 题，可以「结束并批改」。';return;}
+      ispState.idx++;
+      document.getElementById('captured').textContent='正在生成下一个问题…';
+      nextISPQuestion(q);
+    },msg=>{recording=false;const b=qArea.querySelector('#recBtn');if(b)b.disabled=false;clearTimer();document.getElementById('captured').textContent=msg;},true);
+  };
+  qArea.querySelector('#stopBtn').onclick=()=>{clearTimer();stopRecord();};
+  qArea.querySelector('#submitBtn').onclick=()=>submitISP(q);
+}
+async function nextISPQuestion(q){
+  let follow='Tell me more about that.';
+  const last=ispAnswers[ispState.idx-1];
+  if(settings.apiKey){
+    try{
+      const raw=await callDS([{role:'system',content:'你是 DET 互动口说中的 AI 角色 Bea。根据学生的上一条回答，生成一个自然衔接的下一个英文问题（一句话），像真人对话一样承接和追问。只输出问题本身，不要其他文字。'},{role:'user',content:'Bea 刚问：'+ispState.list[ispState.idx-1]+'\n学生回答：'+last}],0.6);
+      if(raw&&raw.trim())follow=raw.trim().replace(/^["']|["']$/g,'');
+    }catch(e){}
+  }else{
+    const fb=(q.fallback||[])[ispState.idx-1];
+    if(fb)follow=fb;
+  }
+  ispState.q=follow;ispState.list.push(follow);
+  appendISPLog('Bea',follow);
+  const box=document.getElementById('ispQ');
+  box.innerHTML=esc(follow)+' <button class="spk small" id="ispPlay">🔊</button>';
+  box.querySelector('#ispPlay').onclick=()=>speak(follow,0.9);
+  document.getElementById('captured').textContent='';
+}
+function appendISPLog(who,text){
+  const el=document.getElementById('ispLog');
+  el.innerHTML+='<div><b>'+esc(who)+':</b> '+esc(text)+'</div>';
+}
+async function submitISP(q){
+  clearTimer();stopRecord();
+  const list=ispState.list;
+  const answers=list.map((_,i)=>ispAnswers[i]||'');
+  if(answers.every(a=>!a)){showResult('互动口说',0,'没有任何录音。');logHistory('isp',0,'空答');return;}
+  qArea.querySelector('#submitBtn').disabled=true;qArea.querySelector('#submitBtn').textContent='批改中…';
+  const sys=speakSys(['Conversation','Production']);
+  const user=list.map((qq,i)=>'Q'+(i+1)+': '+qq+'\nA'+(i+1)+': '+(answers[i]||'（未作答）')).join('\n\n');
+  try{
+    const raw=await callDS([{role:'system',content:sys},{role:'user',content:user}],0.2);
+    const r=parseJSON(raw);
+    showResult('互动口说',r?round5(r.overall):null,`回答数：${answers.filter(a=>a).length}/${list.length}`,r||{});
+    logHistory('isp',r?round5(r.overall):0,'互动口说批改');
+  }catch(err){showResult('互动口说',null,'批改失败：'+err.message);}
+  const btn=qArea.querySelector('#submitBtn');if(btn){btn.disabled=false;btn.textContent='结束并批改';}
+}
+
+// ================= 看图写作 WP =================
+function renderWP(q){
+  qArea.innerHTML=`<div class="card">${cardHead(TC.wp.label,TC.wp.sub,q.time||TC.wp.time,bandBadge(q))}
+    ${photoHtml(q)}
+    <p class="q-instr">你的朋友刚发来这张照片。用 1–2 句英文描述它，再按「提交批改」。限时 1 分钟。</p>
+    <textarea id="wpInput" placeholder="Describe the photo in English…"></textarea>
+    <div class="q-actions" style="margin-top:12px">${aiBtn()}<button id="startBtn" class="primary">开始</button><button id="submitBtn" disabled>提交批改</button></div>
+  </div>`;
+  qArea.querySelector('#startBtn').onclick=()=>{qArea.querySelector('#startBtn').disabled=true;qArea.querySelector('#submitBtn').disabled=false;startTimer(q.time||TC.wp.time,()=>submitWP(q));};
+  qArea.querySelector('#submitBtn').onclick=()=>submitWP(q);
+}
+async function submitWP(q){
+  clearTimer();
+  const input=qArea.querySelector('#wpInput').value.trim();
+  if(!input){showResult('看图写作',0,'没有写内容。');logHistory('wp',0,'空答');return;}
+  await gradeWriting('看图写作',`照片内容：${q.scene}\n要求：用 1–2 句英文描述这张照片。`,input,'wp');
+}
+
+// ================= 互动写作 IW（两段式）=================
+function renderIW(q){
+  qArea.innerHTML=`<div class="card">${cardHead(TC.iw.label,TC.iw.sub,TC.iw.time/2)}
+    <p class="q-instr"><span class="part-tag">Part 1</span>先读下面的段落，写一段回应（约 100–130 词）。完成后按「完成 Part 1」。</p>
+    <div class="prompt-box">${esc(q.prompt)}</div>
+    <textarea id="iwA" placeholder="Write your response to Part 1 in English…"></textarea>
+    <div class="q-actions" style="margin-top:12px">${aiBtn()}<button id="startBtn" class="primary">开始</button><button id="submitBtn" disabled>完成 Part 1</button></div>
+  </div>`;
+  qArea.querySelector('#startBtn').onclick=()=>{qArea.querySelector('#startBtn').disabled=true;qArea.querySelector('#submitBtn').disabled=false;startTimer(TC.iw.time/2,()=>submitIWA(q));};
+  qArea.querySelector('#submitBtn').onclick=()=>submitIWA(q);
+}
+async function submitIWA(q){
+  clearTimer();
+  const partA=qArea.querySelector('#iwA').value.trim();
+  if(!partA){showResult('互动写作',0,'Part 1 没有写内容。');logHistory('iw',0,'空答');return;}
+  qArea.querySelector('#submitBtn').disabled=true;qArea.querySelector('#submitBtn').textContent='生成 Part 2…';
+  let follow='Please explain the main point of your response in more detail and give a specific example.';
+  try{
+    const raw=await callDS([{role:'system',content:'你是 DET 考官。根据学生的 Part 1 写作内容，生成一个自然衔接的 Part 2 追问问题（英文，一句话，要能引导学生进一步展开刚才的内容）。只输出问题本身，不要其他文字。'},{role:'user',content:'Part 1 阅读材料：'+q.prompt+'\n学生的 Part 1 回答：\n'+partA}],0.5);
+    if(raw&&raw.trim())follow=raw.trim().replace(/^["']|["']$/g,'');
+  }catch(e){}
+  renderIWB(q,partA,follow);
+}
+function renderIWB(q,partA,follow){
+  qArea.innerHTML=`<div class="card">${cardHead(TC.iw.label,TC.iw.sub,180)}
+    <p class="q-instr"><span class="part-tag">Part 2</span>根据你 Part 1 的回答，继续写一段回应（约 100–130 词）。限时 3 分钟。</p>
+    <div class="prompt-box"><b>Part 2 追问：</b>${esc(follow)}</div>
+    <p class="hint">你的 Part 1：${esc(partA.slice(0,200))}${partA.length>200?'…':''}</p>
+    <textarea id="iwB" placeholder="Write your response to Part 2 in English…"></textarea>
+    <div class="q-actions" style="margin-top:12px"><button id="startB" class="primary">开始</button><button id="submitB" disabled>完成并批改</button></div>
+  </div>`;
+  qArea.querySelector('#startB').onclick=()=>{qArea.querySelector('#startB').disabled=true;qArea.querySelector('#submitB').disabled=false;startTimer(180,()=>submitIWB(q,partA,follow));};
+  qArea.querySelector('#submitB').onclick=()=>submitIWB(q,partA,follow);
+}
+async function submitIWB(q,partA,follow){
+  clearTimer();
+  const partB=qArea.querySelector('#iwB').value.trim();
+  if(!partB){showResult('互动写作',0,'Part 2 没有写内容。');return;}
+  submitBtnBusy(true);
+  const wcA=partA.split(/\s+/).length,wcB=partB.split(/\s+/).length;
+  const sys='你是 DET 互动写作考官。学生的回答分两段（Part 1 + Part 2），按任务完成度、词汇、语法、连贯性批改，参考 DET 10–160 全尺度。只输出 JSON：{"overall":0-160,"content":0-10,"vocabulary":0-10,"grammar":0-10,"coherence":0-10,"comment":"中文2-3句，指出具体问题","priority":"中文一句话"}。不虚高。'+goalWeak();
+  const user='阅读材料：'+q.prompt+'\nPart 2 追问：'+follow+'\n\nPart 1（约'+wcA+'词）：\n'+partA+'\n\nPart 2（约'+wcB+'词）：\n'+partB;
+  try{
+    const raw=await callDS([{role:'system',content:sys},{role:'user',content:user}],0.2);
+    const r=parseJSON(raw);
+    showResult('互动写作',r?r.overall:null,`Part 1 约 ${wcA} 词 · Part 2 约 ${wcB} 词`,r||{});
+    logHistory('iw',r?r.overall:0,'互动写作批改');
+  }catch(err){showResult('互动写作',null,'批改失败：'+err.message);}
+  submitBtnBusy(false);
+}
+
+// ================= 写作样题 WS =================
+function renderWS(q){
+  qArea.innerHTML=`<div class="card">${cardHead(TC.ws.label,TC.ws.sub,q.time||TC.ws.time)}
+    <p class="q-instr">先读题思考 30 秒，然后开始写作，尽量写到 3 分钟以上。限时 5 分钟。</p>
+    <div class="sentence">${esc(q.topic)}</div>
+    <div class="q-actions">${aiBtn()}<button id="startBtn" class="primary">开始 30 秒读题</button><button id="submitBtn" disabled>提交批改</button></div>
+    <textarea id="wsInput" placeholder="Write your essay in English…" style="margin-top:12px"></textarea>
+  </div>`;
+  let phase=0;
+  qArea.querySelector('#startBtn').onclick=()=>{
+    const btn=qArea.querySelector('#startBtn');
+    if(phase===0){phase=1;startTimer(30,()=>{phase=2;btn.disabled=true;qArea.querySelector('#submitBtn').disabled=false;startTimer(q.time||TC.ws.time,()=>submitWS(q));});btn.textContent='读题中…（30 秒）';}
+  };
+  qArea.querySelector('#submitBtn').onclick=()=>submitWS(q);
+}
+async function submitWS(q){
+  clearTimer();
+  const input=qArea.querySelector('#wsInput').value.trim();
+  if(!input){showResult('写作样题',0,'没有写内容。');logHistory('ws',0,'空答');return;}
+  await gradeWriting('写作样题',`题目：${q.topic}\n要求：写作样题，写一篇完整短文（建议 3 分钟以上、2 段以上）。`,input,'ws');
+}
+
+// ================= 批改（对齐 DET 官方评分标准）=================
+const DET_CTX='DET 官方评分框架：总分 10–160（5 分一档）；CEFR 分档 10–55=A1/A2、60–85=B1、90–115=B2、120–160=C1/C2；四个官方子分 Literacy(读写)/Comprehension(理解)/Conversation(会话)/Production(产出)。';
+// 官方 concordance（2024–2025 数据）：DET ↔ IELTS Academic
+const IELTS_CONC=[[10,1.5],[15,2],[20,2.5],[30,3],[45,3.5],[55,4],[65,4.5],[75,5],[85,5.5],[95,6],[105,6.5],[115,7],[125,7.5],[135,8],[145,8.5],[155,9]];
+// 官方 concordance：DET ↔ TOEFL iBT（0–120 旧制，取区间下限）
+const TOEFL_CONC=[[10,0],[30,1],[35,3],[40,6],[45,11],[50,16],[55,22],[60,28],[65,34],[70,40],[75,46],[80,52],[85,58],[90,64],[95,70],[100,76],[105,82],[110,88],[115,94],[120,99],[125,105],[130,110],[135,114],[140,117],[145,119],[150,120]];
+function round5(n){return n==null?null:Math.round(n/5)*5;}
+function cefrOf(d){if(d==null)return '—';if(d<=55)return 'A1/A2';if(d<=85)return 'B1';if(d<=115)return 'B2';return 'C1/C2';}
+function ieltsOf(d){let r='—';for(const[k,v]of IELTS_CONC){if(d>=k)r=v;else break;}return r;}
+function toeflOf(d){let r='—';for(const[k,v]of TOEFL_CONC){if(d>=k)r=v;else break;}return r;}
+function goalWeak(){
+  const p=[];
+  if(settings.goal)p.push('学生目标分是'+settings.goal+'，请指出差距。');
+  if(settings.weak)p.push('学生自述弱项：'+settings.weak+'，请重点批改这一块。');
+  return p.join(' ');
+}
+function subInstr(subs){return '本题影响的官方子分：'+subs.join('、')+'（其余子分填 null）。';}
+function writingSys(subs){return '你是 Duolingo English Test (DET) 资深考官。'+DET_CTX+'严格按官方能力描述批改写作。只输出一个 JSON 对象，不要任何其他文字：{"overall":10-160(5的倍数),"literacy":0-160或null,"comprehension":0-160或null,"conversation":0-160或null,"production":0-160或null,"cefr":"A1/A2或B1或B2或C1/C2","comment":"中文2-3句，指出具体问题和改进","priority":"中文一句话，当前最该练的一点"}。评分严格，不虚高。'+subInstr(subs)+goalWeak();}
+function speakSys(subs){return '你是 DET 口语考官（Conversation/Production）。'+DET_CTX+'按官方能力描述批改学生口语转写，注明发音需自查。只输出一个 JSON 对象，不要任何其他文字：{"overall":10-160(5的倍数),"literacy":0-160或null,"comprehension":0-160或null,"conversation":0-160或null,"production":0-160或null,"cefr":"A1/A2或B1或B2或C1/C2","comment":"中文2-3句","priority":"中文一句话，当前最该练的一点"}。评分严格，不虚高。'+subInstr(subs)+goalWeak();}
+async function gradeWriting(label,instr,answer,key){
+  submitBtnBusy(true);
+  try{
+    const raw=await callDS([{role:'system',content:writingSys(['Literacy','Production'])},{role:'user',content:'题目与要求：'+instr+'\n\n学生的回答：\n'+answer}],0.2);
+    const r=parseJSON(raw);
+    showResult(label,r?round5(r.overall):null,null,r||{});
+    logHistory(key||label,r?round5(r.overall):0,'AI 批改');
+  }catch(err){showResult(label,null,'批改失败：'+err.message);}
+  submitBtnBusy(false);
+}
+function submitBtnBusy(b){
+  const btn=qArea.querySelector('#submitBtn');
+  if(btn){btn.disabled=b;btn.textContent=b?'批改中…':'提交批改';}
+}
+
+// ================= AI 出题 =================
+const AI_PROMPTS={
+  rs:'生成一道 DET 词汇判断题。只输出 JSON，不要其他文字：{"words":[{"w":"单词","real":true}]}。共 9 个词，约一半真实常用词、一半看似合理的编造词。',
+  fib:'生成一道 DET 完形打字题（Read & Complete）。只输出 JSON：{"segments":[{"text":"前面文字"},{"gap":{"word":"完整单词"}},{"text":"后面文字"}]}。共 3 个空，中间难度的自然英文短文，单词 4–12 个字母。',
+  fibw:'生成一道 DET 选词填空（Fill in the Blanks）练习。只输出 JSON：{"items":[{"segments":[{"text":"句首"},{"gap":{"word":"完整单词"}},{"text":"句尾"}]}]}。共 3 个独立英文句子，每句缺一个单词。',
+  lt:'生成一句 5–12 词的英文句子用于听写。只输出 JSON：{"sentence":"..."}',
+  ir:'生成一道 DET 互动阅读题：一篇英文短文（8–10 句）+ 6 道题。只输出 JSON：{"passage":"短文","questions":[{"type":"csentence|completepassage|highlight|ideatopic|title","qt":"Complete the Sentences|Complete the Passage|Highlight the Answer|Identify the Idea|Title the Passage","q":"题目","options":["A","B","C","D"],"answer":0}]}。组合建议：2 道 Complete the Sentences、1 道 Complete the Passage、2 道 Highlight、1 道 Identify the Idea、1 道 Title；answer 为正确选项下标；中间难度。',
+  il:'生成一道 DET 互动听力（Listen and Respond）题：一段学生与教授/同学的场景对话。只输出 JSON：{"scenario":"英文场景描述（你是学生，想找对方办什么事）","turns":[{"speaker":"Professor","line":"对方说的一句台词","options":["回应A","回应B","回应C","回应D"],"answer":0}]}。要求：scenario 用英文写清场景；5 个回合，每回合 4 个回应选项；answer 为最佳回应下标(0-based)；对话连贯自然、难度中等。',
+  sp:'用中文描述一张照片场景，用于看图说话。只输出 JSON：{"scene":"中文场景描述，30-50字"}',
+  rtsp:'生成一道 DET 读后口说（Read, Then Speak）英文题目（考生读完开口回答）。只输出 JSON：{"topic":"英文题目"}',
+  isp:'生成一道 DET 互动口说（Interactive Speaking）的第一个问题（AI 角色 Bea 的开场白，英文，一句话，适合轻松开场）。只输出 JSON：{"opener":"英文第一问"}',
+  ss:'生成一道 DET 口说样题（Speaking Sample）英文题目。只输出 JSON：{"topic":"英文题目"}',
+  wp:'用中文描述一张照片场景，用于看图写作。只输出 JSON：{"scene":"中文场景描述，30-50字"}',
+  iw:'生成一段 DET 互动写作 Part 1 的英文阅读材料（80–120 词，末尾自然引出写作任务）。只输出 JSON：{"prompt":"英文阅读段落"}',
+  ws:'生成一道 DET 写作样题（Writing Sample）英文题目。只输出 JSON：{"topic":"英文题目"}'
+};
+function validateAI(type,q){
+  const t=TC[type].time;
+  if(type==='rs')return Array.isArray(q.words)&&q.words.length===9&&q.words.every(w=>typeof w.w==='string'&&typeof w.real==='boolean')?Object.assign({time:t},q):null;
+  if(type==='fib')return Array.isArray(q.segments)&&q.segments.filter(s=>s.gap).length>=2&&q.segments.every(s=>!s.gap||typeof s.gap.word==='string')?Object.assign({time:t},q):null;
+  if(type==='fibw')return Array.isArray(q.items)&&q.items.length>=2&&q.items.every(it=>Array.isArray(it.segments)&&it.segments.filter(s=>s.gap).length>=1)?Object.assign({time:t},q):null;
+  if(type==='lt')return typeof q.sentence==='string'&&q.sentence?Object.assign({time:t},q):null;
+  if(type==='ir')return Array.isArray(q.paras)&&q.paras.length>=2&&q.q1&&Array.isArray(q.q1.blanks)&&q.q1.blanks.length>=3&&q.q2&&Array.isArray(q.q2.options)&&q.q2.options.length>=3&&q.q3&&q.q4&&q.q5&&Array.isArray(q.q5.options)&&q.q6&&Array.isArray(q.q6.options)?Object.assign({time:t},q):null;
+  if(type==='il')return typeof q.scenario==='string'&&q.scenario&&Array.isArray(q.turns)&&q.turns.length>=3&&q.turns.every(x=>typeof x.line==='string'&&Array.isArray(x.options)&&x.options.length>=3&&typeof x.answer==='number')?Object.assign({time:t,summary_time:75,scenario:q.scenario,turns:q.turns},q):null;
+  if(type==='sp'||type==='wp')return typeof q.scene==='string'&&q.scene?Object.assign({time:t},q):null;
+  if(type==='rtsp'||type==='ss'||type==='ws')return typeof q.topic==='string'&&q.topic?Object.assign({time:t},q):null;
+  if(type==='isp')return typeof q.opener==='string'&&q.opener?Object.assign({time:t,opener:q.opener,target:6,fallback:[]},q):null;
+  if(type==='iw')return typeof q.prompt==='string'&&q.prompt?Object.assign({time:t},q):null;
+  return null;
+}
+async function aiGenerate(type){
+  if(type==='sp'||type==='wp'){ // 看图题本地照片有限，直接随机抽一张（不调 AI）
+    let bank=photoBankFiltered();
+    if(!bank.length)bank=BANK[type];
+    return Object.assign({time:TC[type].time}, rnd(bank));
+  }
+  if(type==='ir'){ // 互动阅读本地文章有限，直接随机抽一篇（AI 难稳定生成带答案的完整 6 题结构）
+    return Object.assign({time:TC.ir.time}, rnd(BANK.ir));
+  }
+  const raw=await callDS([{role:'system',content:'You generate practice questions for the Duolingo English Test. Always return ONLY a valid JSON object, no markdown, no other text.'},{role:'user',content:AI_PROMPTS[type]}],0.6);
+  const v=validateAI(type,parseJSON(raw));
+  if(!v)throw new Error('AI 返回内容不合规，已保留原题');
+  return v;
+}
+async function doAIQuestion(){
+  if(!currentType)return;
+  const btn=document.getElementById('aiBtn');
+  if(btn){btn.disabled=true;btn.textContent='生成中…';}
+  clearTimer();
+  try{const q=await aiGenerate(currentType);currentQ=q;renderCurrent(currentType,q);}
+  catch(err){
+    if(btn){btn.disabled=false;btn.textContent='🔄 AI 出题';}
+    resultArea.innerHTML='<div class="result"><p class="err">'+esc(err.message)+'</p></div>';
+    if(currentQ)RENDERERS[currentType](currentQ);
+  }
+}
+qArea.addEventListener('click',e=>{if(e.target.id==='aiBtn')doAIQuestion();});
+
+// ================= DeepSeek 调用 =================
+async function callDS(messages,temperature){
+  if(!settings.apiKey)throw new Error('请先在 ⚙ 设置 里填 API Key');
+  const res=await fetch(settings.endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.apiKey},body:JSON.stringify({model:settings.model,messages,temperature,max_tokens:1100})});
+  if(!res.ok){const t=await res.text().catch(()=>'');throw new Error('API '+res.status+' '+t.slice(0,200));}
+  const data=await res.json();
+  return data.choices[0].message.content;
+}
+function parseJSON(raw){
+  const c=String(raw).trim().replace(/^```(?:json)?/,'').replace(/```$/,'').trim();
+  try{return JSON.parse(c);}catch(e){}
+  const m=c.match(/\{[\s\S]*\}/);
+  if(m){try{return JSON.parse(m[0]);}catch(e){}}
+  return null;
+}
+
+// ================= 结果 =================
+const RENDERERS={rs:renderRS,fib:renderFIB,fibw:renderFIBW,lt:renderLT,ir:renderIR,il:renderIL,sp:renderSP,rtsp:renderRTSP,isp:renderISP,ss:renderSS,wp:renderWP,iw:renderIW,ws:renderWS};
+function dimCard(name,val){return '<div class="dim"><b>'+(val===undefined?'–':val)+'</b><span>'+name+'</span></div>';}
+function showResult(label,score,note,dims){
+  let html='<div class="result"><h3>'+esc(label)+'</h3>';
+  const s=score!=null?round5(score):(dims&&dims.overall!=null?round5(dims.overall):null);
+  if(s!=null){
+    html+='<div class="score-line"><span class="big-score">'+s+'</span><span>DET 估算 · CEFR '+cefrOf(s)+'</span></div>';
+    html+='<div class="hint" style="margin:-4px 0 10px">≈ 雅思 '+ieltsOf(s)+' · TOEFL '+toeflOf(s)+'（官方 concordance）</div>';
+  }
+  if(dims){
+    const subs=[['Literacy 读写','literacy'],['Comprehension 理解','comprehension'],['Conversation 会话','conversation'],['Production 产出','production']];
+    const cards=subs.map(([n,k])=>dims[k]!=null?dimCard(n,round5(dims[k])):'').join('');
+    if(cards)html+='<div class="dims">'+cards+'</div>';
+  }
+  html+='<div class="comment">';
+  if(dims&&dims.comment)html+='<p>'+esc(dims.comment)+'</p>';
+  if(dims&&dims.priority)html+='<p class="priority">🎯 '+esc(dims.priority)+'</p>';
+  if(note)html+='<p style="color:var(--muted);font-size:13px;margin-top:6px">'+esc(note).replace(/\n/g,'<br>')+'</p>';
+  html+='</div><div class="q-actions" style="margin-top:12px"><button onclick="showType(currentType)">下一题</button></div></div>';
+  resultArea.innerHTML=html;
+}
+
+// ================= 记录 =================
+function getHistory(){return JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');}
+function logHistory(type,score,note){
+  const h=getHistory();h.unshift({t:Date.now(),type,score,note});if(h.length>30)h.length=30;
+  localStorage.setItem(HISTORY_KEY,JSON.stringify(h));
+}
+function renderHistory(){
+  const list=document.getElementById('historyList');const h=getHistory();
+  if(!h.length){list.innerHTML='<p class="hint">还没有记录。</p>';return;}
+  list.innerHTML=h.map(it=>{
+    const d=new Date(it.t);const ds=(d.getMonth()+1)+'/'+d.getDate()+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+    return `<div class="history-item"><span>${TC[it.type]?TC[it.type].label:it.type}</span><span>${it.score!==undefined?it.score+'分':''}</span><span class="hint">${esc(it.note||'')}</span><span class="hint">${ds}</span></div>`;
+  }).join('');
+}
+
+// ================= 弹窗 =================
+function openModal(id){document.getElementById(id).classList.remove('hidden');}
+function closeModal(id){document.getElementById(id).classList.add('hidden');}
+document.getElementById('btnSettings').onclick=()=>{
+  document.getElementById('setKey').value=settings.apiKey;
+  document.getElementById('setModel').value=settings.model;
+  document.getElementById('setEndpoint').value=settings.endpoint;
+  document.getElementById('setGoal').value=settings.goal;
+  document.getElementById('setWeak').value=settings.weak;
+  document.getElementById('testResult').textContent='';
+  openModal('settingsModal');
+};
+document.getElementById('closeSettings').onclick=()=>closeModal('settingsModal');
+document.getElementById('saveBtn').onclick=()=>{
+  settings={apiKey:document.getElementById('setKey').value.trim(),model:document.getElementById('setModel').value.trim()||'deepseek-chat',endpoint:document.getElementById('setEndpoint').value.trim()||DEFAULT_SETTINGS.endpoint,goal:document.getElementById('setGoal').value.trim(),weak:document.getElementById('setWeak').value.trim()};
+  saveSettings();document.getElementById('testResult').textContent='已保存。';
+};
+document.getElementById('testBtn').onclick=async()=>{
+  const el=document.getElementById('testResult');el.textContent='连接中…';el.className='hint';
+  const key=document.getElementById('setKey').value.trim();
+  const model=document.getElementById('setModel').value.trim()||'deepseek-chat';
+  const endpoint=document.getElementById('setEndpoint').value.trim()||DEFAULT_SETTINGS.endpoint;
+  try{
+    const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:[{role:'user',content:'ping'}],max_tokens:5})});
+    if(!res.ok){const t=await res.text().catch(()=>'');el.textContent='失败：'+res.status+' '+t.slice(0,150);el.className='hint err';return;}
+    el.textContent='✅ 连接成功。';el.className='hint ok';
+  }catch(err){el.textContent='失败：'+err.message+'（若报 CORS，需要用本地代理，回聊天找我）';el.className='hint err';}
+};
+document.getElementById('btnHistory').onclick=()=>{renderHistory();openModal('historyModal');};
+document.getElementById('closeHistory').onclick=()=>closeModal('historyModal');
+
+// ================= 模拟考试 =================
+const SUBMAP={
+  rs:['Literacy','Comprehension'],fib:['Literacy','Comprehension'],fibw:['Literacy','Comprehension'],
+  lt:['Comprehension','Conversation'],ir:['Literacy','Comprehension'],
+  il:['Comprehension','Conversation','Production'],
+  sp:['Conversation','Production'],rtsp:['Conversation','Production'],isp:['Conversation','Production'],ss:['Conversation','Production'],
+  wp:['Literacy','Production'],iw:['Literacy','Production'],ws:['Literacy','Production']
+};
+const SUBJ_INSTR={
+  wp:q=>`照片内容：${q.scene}${q.band?'（本题目标分数段 DET '+bandLabel(q.band)+'）':''}\n要求：用 1–2 句英文描述这张照片。`,
+  ws:q=>`题目：${q.topic}\n要求：写作样题，写一篇完整短文（建议 3 分钟以上、2 段以上）。`,
+  iw:(q,a,f)=>`阅读材料：${q.prompt}\nPart 2 追问：${f}\n要求：Part 1 与 Part 2 两段完整回应。\nPart 1：${a||'（空）'}`,
+  sp:q=>`照片内容：${q.scene}${q.band?'（本题目标分数段 DET '+bandLabel(q.band)+'）':''}\n要求：用 1–2 句英文口头描述这张照片。`,
+  rtsp:q=>`题目：${q.topic}\n要求：读题后口头回答。`,
+  ss:q=>`题目：${q.topic}\n要求：连续用英文说 1–3 分钟，完整表达观点和理由。`,
+  isp:q=>`互动口说：Bea 开场问题 ${q.opener||''}（后续问题由 AI 根据回答生成）。`,
+  ilsum:q=>`对话场景：${q.scenario}\n对话内容（含最佳回应）：\n${q.turns.map(t=>t.speaker+': '+t.line+'\nYou: '+t.options[t.answer]).join('\n')}\n要求：用 75 秒写一段完整的英文段落总结这段对话（不要只列要点，写完整段落）。`
+};
+let testRunning=false,testSteps=[],testStepIdx=0,testResults=[],testIwState={};
+function setTestPhase(t){const el=document.getElementById('testPhase');if(el)el.textContent=t;}
+
+async function buildTestSteps(){
+  const spec=['rs','lt','fib','fibw','rs','lt','wp','sp','ir','lt','rs','rtsp','iw','iw','fibw','il','ws','isp','ss'];
+  const steps=[];let iwSeen=0;
+  for(let i=0;i<spec.length;i++){
+    const type=spec[i];let q=null;
+    if(settings.apiKey){try{q=await aiGenerate(type);}catch(e){}}
+    if(!q)q=nextQuestion(type);
+    let part=1;if(type==='iw'){iwSeen++;part=iwSeen;}
+    steps.push({type,q,part});
+    setTestPhase('生成试卷 '+(i+1)+'/'+spec.length+' …');
+  }
+  return steps;
+}
+function setupTestMode(step){
+  qArea.classList.add('test-mode');
+  const type=step.type;
+  if(type==='iw'&&step.part===2){
+    const sb=qArea.querySelector('#submitB');
+    if(sb){sb.textContent='下一题 →';sb.disabled=false;sb.className='primary';sb.onclick=()=>testNext();}
+    const st=qArea.querySelector('#startB');
+    if(st){st.onclick=()=>{st.disabled=true;const s=qArea.querySelector('#submitB');if(s)s.disabled=false;startTimer(180,()=>testNext());};st.click();}
+    return;
+  }
+  const sb=qArea.querySelector('#submitBtn');
+  if(sb){sb.textContent='下一题 →';sb.disabled=false;sb.className='primary';sb.onclick=()=>testNext();}
+  if(type==='lt'){
+    const pb=qArea.querySelector('#playBtn');
+    if(pb){pb.onclick=()=>{speak(step.q.sentence);const s=qArea.querySelector('#submitBtn');if(s)s.disabled=false;startTimer(TC.lt.time,()=>testNext());};pb.click();}
+    return;
+  }
+  if(type==='il'){
+    const st=qArea.querySelector('#startBtn');
+    if(st)st.click();
+    return;
+  }
+  const startBtn=qArea.querySelector('#startBtn');
+  if(startBtn){
+    startBtn.onclick=()=>{
+      startBtn.disabled=true;
+      const s=qArea.querySelector('#submitBtn');if(s)s.disabled=false;
+      if(type==='ws'){
+        startTimer(30,()=>{const s2=qArea.querySelector('#submitBtn');if(s2)s2.disabled=false;startTimer(TC.ws.time,()=>testNext());});
+      }else{
+        startTimer(type==='iw'?TC.iw.time/2:TC[type].time,()=>testNext());
+      }
+    };
+    startBtn.click();
+  }
+}
+function renderTestStep(idx){
+  const step=testSteps[idx];
+  currentType=step.type;currentQ=step.q;
+  setActiveTab(step.type);
+  if(step.type==='iw'&&step.part===2){renderIWB(step.q,testIwState.partA,testIwState.follow);}
+  else{RENDERERS[step.type](step.q);}
+  setupTestMode(step);
+  setTestPhase('第 '+(idx+1)+' / '+testSteps.length+' 题');
+}
+function collect(type,q){
+  if(type==='rs'){const c=rsState.ans.filter(a=>a.val===a.real).length;return {score:rsState.ans.length?Math.round(c/rsState.ans.length*100):0};}
+  if(type==='fib'){
+    const els=[...qArea.querySelectorAll('.fib')];
+    let correct=0;els.forEach(el=>{if(el.querySelector('input').value.trim().toLowerCase()===el.dataset.word.toLowerCase())correct++;});
+    return {score:els.length?Math.round(correct/els.length*100):0};
+  }
+  if(type==='fibw'){const c=fibwState.ans.filter(Boolean).length;return {score:fibwState.ans.length?Math.round(c/fibwState.ans.length*100):0};}
+  if(type==='lt'){
+    const input=(((qArea.querySelector('#ltInput')||{}).value)||'').trim();
+    const orig=normWords(q.sentence),typed=normWords(input);
+    const matched=orig.filter(w=>typed.includes(w)).length;
+    return {score:orig.length?Math.round(matched/orig.length*100):0};
+  }
+  if(type==='ir')return {score:irState.q?Math.round(irState.points/6*100):0};
+  if(type==='il'){
+    let correct=0;q.turns.forEach((t,i)=>{if(ilState.choices[i]===t.answer)correct++;});
+    const summary=(((qArea.querySelector('#ilSummary')||{}).value)||'').trim();
+    return {mcScore:q.turns.length?Math.round(correct/q.turns.length*100):0,summary,mcCorrect:correct,mcTotal:q.turns.length};
+  }
+  if(type==='wp')return {text:(((qArea.querySelector('#wpInput')||{}).value)||'').trim()};
+  if(type==='ws')return {text:(((qArea.querySelector('#wsInput')||{}).value)||'').trim()};
+  if(type==='iw')return {text:((((qArea.querySelector('#iwA')||{}).value)||((qArea.querySelector('#iwB')||{}).value)||'')).trim()};
+  if(type==='sp'||type==='rtsp'||type==='ss')return {text:(((qArea.querySelector('#speakText')||{}).value)||'').trim()};
+  if(type==='isp'){const list=ispState.list.length?ispState.list:(q.opener?[q.opener]:[]);return {answers:list.map((_,i)=>ispAnswers[i]||''),answered:list.filter((_,i)=>ispAnswers[i]).length,questions:list.slice()};}
+  return {score:0};
+}
+async function testNext(){
+  clearTimer();stopRecord();
+  const step=testSteps[testStepIdx];
+  const r=collect(step.type,step.q);
+  testResults[testStepIdx]=r;
+  if(step.type==='iw'&&step.part===1){
+    testIwState.partA=r.text;
+    setTestPhase('生成 Part 2…');
+    let follow='Please explain the main point of your response in more detail and give a specific example.';
+    if(settings.apiKey){try{const raw=await callDS([{role:'system',content:'你是 DET 考官。根据学生 Part 1 写作内容生成一个自然衔接的 Part 2 追问问题（英文一句话，只输出问题本身）。'},{role:'user',content:'阅读材料：'+step.q.prompt+'\nPart 1：'+r.text}],0.5);if(raw&&raw.trim())follow=raw.trim().replace(/^["']|["']$/g,'');}catch(e){}}
+    testIwState.follow=follow;
+  }
+  testStepIdx++;
+  if(testStepIdx<testSteps.length)renderTestStep(testStepIdx);
+  else testFinish();
+}
+async function gradeOne(s){
+  const isWriting=(s.type==='wp'||s.type==='ws'||s.type==='iw'||s.type==='ilsum');
+  const sys=isWriting?writingSys(['Literacy','Production']):speakSys(['Conversation','Production']);
+  const raw=await callDS([{role:'system',content:sys},{role:'user',content:'题目与要求：'+s.instr+'\n\n学生的回答：\n'+s.text}],0.2);
+  return parseJSON(raw)||{overall:null};
+}
+async function testFinish(){
+  const subj=[];
+  testResults.forEach((r,i)=>{
+    if(!r)return;const type=testSteps[i].type;const q=testSteps[i].q;
+    if(type==='wp')subj.push({type,i,text:r.text,instr:SUBJ_INSTR.wp(q)});
+    else if(type==='ws')subj.push({type,i,text:r.text,instr:SUBJ_INSTR.ws(q)});
+    else if(type==='iw'&&testSteps[i].part===2)subj.push({type,i,text:r.text,instr:SUBJ_INSTR.iw(q,testIwState.partA,testIwState.follow)});
+    else if(type==='sp')subj.push({type,i,text:r.text,instr:SUBJ_INSTR.sp(q)});
+    else if(type==='rtsp')subj.push({type,i,text:r.text,instr:SUBJ_INSTR.rtsp(q)});
+    else if(type==='ss')subj.push({type,i,text:r.text,instr:SUBJ_INSTR.ss(q)});
+    else if(type==='isp')subj.push({type,i,text:r.answers.join(' '),instr:(r.questions&&r.questions.length)?('互动口说问题：\n'+r.questions.map((x,i2)=>'Q'+(i2+1)+': '+x).join('\n')):SUBJ_INSTR.isp(q)});
+    else if(type==='il'&&r.summary)subj.push({type:'ilsum',i,text:r.summary,instr:SUBJ_INSTR.ilsum(q)});
+  });
+  const grades={};
+  for(let k=0;k<subj.length;k++){
+    setTestPhase('批改主观题 '+(k+1)+'/'+subj.length+'…');
+    try{grades[subj[k].i]=await gradeOne(subj[k]);}catch(e){grades[subj[k].i]={overall:null,comment:'批改失败'};}
+  }
+  renderTestReport(grades);
+}
+function detFromScore(pct){return round5(Math.round(10+pct/100*150));}
+function renderTestReport(grades){
+  document.body.classList.remove('testing');
+  document.getElementById('testBar').classList.add('hidden');
+  qArea.classList.remove('test-mode');
+  const subsum={Literacy:[],Comprehension:[],Conversation:[],Production:[]};
+  const rows=[];let tot=0,cnt=0;
+  testSteps.forEach((step,i)=>{
+    const r=testResults[i];if(!r)return;
+    if(step.type==='iw'&&step.part===1)return;
+    let det=null,note='';
+    const g=grades[i];
+    if(step.type==='il'){
+      const mcDet=detFromScore(r.mcScore);
+      det=(g&&g.overall!=null)?Math.round((mcDet+g.overall)/2):mcDet;
+      note=(r.summary?'· 总结已批改':'· 未写总结')+(g&&g.comment?' · '+g.comment:'');
+    }else if(g&&g.overall!=null){det=g.overall;note=g.comment||'';}
+    else if(r.score!=null){det=detFromScore(r.score);note=(step.type==='lt')?('命中 '+r.score+'%'):(r.score+'%');}
+    else return;
+    det=round5(det);
+    tot+=det;cnt++;
+    (SUBMAP[step.type]||[]).forEach(s=>subsum[s].push(det));
+    rows.push({label:TC[step.type].label+(step.type==='iw'?' (Part 2)':''),det,note});
+  });
+  const overall=cnt?round5(Math.round(tot/cnt)):null;
+  const subs={};for(const k in subsum){const a=subsum[k];subs[k]=a.length?round5(Math.round(a.reduce((x,y)=>x+y,0)/a.length)):null;}
+  let html='<div class="result"><h3>🧪 模拟考试报告</h3>';
+  if(overall!=null){
+    html+='<div class="score-line"><span class="big-score">'+overall+'</span><span>DET 估算 · CEFR '+cefrOf(overall)+'</span></div>';
+    html+='<div class="hint" style="margin:-4px 0 10px">≈ 雅思 '+ieltsOf(overall)+' · TOEFL '+toeflOf(overall)+'（官方 concordance，仅供参考）</div>';
+  }
+  html+='<div class="dims">'
+    +dimCard('Literacy 读写',subs.Literacy)+dimCard('Comprehension 理解',subs.Comprehension)
+    +dimCard('Conversation 会话',subs.Conversation)+dimCard('Production 产出',subs.Production)
+    +'</div>';
+  html+='<table class="report-table"><thead><tr><th>题型</th><th style="text-align:right">得分</th><th>备注</th></tr></thead><tbody>';
+  rows.forEach(row=>{
+    html+='<tr><td>'+esc(row.label)+'</td><td class="c">'+(row.det!=null?row.det:'–')+'</td><td class="hint">'+esc(row.note||'')+'</td></tr>';
+  });
+  html+='</tbody></table>';
+  html+='<div class="comment"><p>说明：总分按各题型得分平均估算，仅供参考；真实 DET 总分由官方自适应算法给出。互动阅读/互动听力在整场考试中每次出 12 题左右，本模拟用一组代表题型。</p></div>';
+  html+='<div class="q-actions"><button onclick="afterTest()">返回练习</button></div></div>';
+  resultArea.innerHTML=html;
+  logHistory('test',overall!=null?overall:0,'模拟考试 '+testSteps.length+' 题');
+}
+function afterTest(){testRunning=false;showType('rs');}
+async function startTest(){
+  if(testRunning)return;
+  if(!confirm('开始模拟考试？\n\n按真实 DET 流程连续作答：每题限时与真实考试一致（界面不显示倒计时），时间到自动进入下一题；中途不能暂停。时长约 45–60 分钟。'))return;
+  testRunning=true;
+  document.body.classList.add('testing');
+  document.getElementById('testBar').classList.remove('hidden');
+  testResults=[];testIwState={};
+  for(const k in ispAnswers)delete ispAnswers[k];
+  qArea.innerHTML='<div class="card"><p class="q-instr">正在生成试卷…（若已填 API Key 会现场生成题目，约 10–20 秒）</p></div>';
+  setTestPhase('准备中…');
+  testSteps=await buildTestSteps();
+  testStepIdx=0;
+  renderTestStep(0);
+}
+document.getElementById('btnQuitTest').onclick=()=>{
+  if(confirm('退出考试？本次成绩不计入记录。')){clearTimer();stopRecord();testRunning=false;document.body.classList.remove('testing');document.getElementById('testBar').classList.add('hidden');qArea.classList.remove('test-mode');showType('rs');}
+};
+
+// ================= 初始化 =================
+TABORDER.forEach(k=>{
+  const b=document.createElement('button');
+  b.textContent=TC[k].label;b.dataset.key=k;b.onclick=()=>showType(k);
+  typeTabs.appendChild(b);
+});
+document.getElementById('btnRandom').onclick=()=>showType(rnd(TABORDER));
+document.getElementById('btnTest').onclick=()=>{startTest();};
+document.getElementById('bandSel').onchange=()=>{
+  bandFilter=document.getElementById('bandSel').value;
+  if(currentType==='wp'||currentType==='sp')showType(currentType);
+};
+if('speechSynthesis' in window){speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();}
+showType('rs');
+</script>
+</body>
+</html>

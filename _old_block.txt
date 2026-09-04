@@ -1,0 +1,60 @@
+async function detectGaze(){
+  if(!gazeState.active||!gazeState.video)return;
+  const v=gazeState.video;
+  if(v.readyState<2||v.videoWidth===0)return;
+  const result=gazeState.faceDetector
+    ?await detectAdvanced(v)
+    :detectBasic(v);
+  applyGazeResult(result);
+}
+async function detectAdvanced(video){
+  try{
+    const faces=await gazeState.faceDetector.detect(video);
+    return analyzeFaces(faces,video);
+  }catch(e){
+    console.warn('[Gaze] FaceDetector 失败,自动降级到基础模式:',e.message);
+    gazeState.fallbackMode=true;gazeState.faceDetector=null;
+    if(!gazeState.canvas)initDetector();
+    return detectBasic(video);
+  }
+}
+function analyzeFaces(faces,video){
+  const W=video.videoWidth||320,H=video.videoHeight||240;
+  if(faces.length>1)return{state:'critical',message:`⚠ 检测到 ${faces.length} 张人脸`};
+  if(faces.length===0)return{state:'critical',message:'⚠ 未检测到人脸'};
+  const box=faces[0].boundingBox;
+  const cx=box.x+box.width/2,cy=box.y+box.height/2;
+  const dx=Math.abs((cx-W/2)/(W/2));
+  const dy=Math.abs((cy-H/2)/(H/2));
+  const size=box.width/W;
+  if(dx>GAZE.facePosWarn||dy>GAZE.facePosWarn){
+    const dir=dx>dy?(cx>W/2?'右':'左'):(cy>H/2?'下':'上');
+    return{state:'warn',message:`⚠ 视线偏${dir},请正视屏幕`};
+  }
+  if(size<GAZE.faceSizeMin)return{state:'warn',message:'⚠ 距离过远,请靠近屏幕'};
+  if(size>GAZE.faceSizeMax)return{state:'warn',message:'⚠ 距离过近,请后退一些'};
+  return{state:'ok',message:'✓ 视线正常'};
+}
+function detectBasic(video){
+  if(!gazeState.canvas||!gazeState.ctx)return{state:'ok',message:'基础模式运行中'};
+  gazeState.ctx.drawImage(video,0,0,gazeState.canvas.width,gazeState.canvas.height);
+  const data=gazeState.ctx.getImageData(0,0,gazeState.canvas.width,gazeState.canvas.height).data;
+  // 平均亮度(归一化到 0-255)
+  let bright=0;
+  for(let i=0;i<data.length;i+=4)bright+=data[i]+data[i+1]+data[i+2];
+  bright/=(data.length/4)/3;
+  // 帧差(运动量,归一化到 0-255)
+  let motion=0;
+  if(gazeState.lastFrame){
+    const prev=gazeState.lastFrame;
+    for(let i=0;i<data.length;i+=16){
+      motion+=Math.abs(data[i]-prev[i])+Math.abs(data[i+1]-prev[i+1])+Math.abs(data[i+2]-prev[i+2]);
+    }
+    motion/=(data.length/16)/3;
+  }
+  gazeState.lastFrame=new Uint8ClampedArray(data);
+  gazeState.frameCount++;
+  if(bright<GAZE.basicBrightCritical)return{state:'critical',message:'⚠ 画面过暗,可能离开屏幕'};
+  if(motion<GAZE.basicMotionMin&&gazeState.frameCount>GAZE.basicMotionFrames)return{state:'warn',message:'画面静止,确认在屏幕前'};
+  return{state:'ok',message:'✓ 视线守护运行中(基础)'};
+}
