@@ -30,6 +30,16 @@
     ws: '生成一道 DET 写作样题（Writing Sample）英文题目。只输出 JSON：{"topic":"英文题目"}'
   };
 
+  const MIMO_TOKEN_PRESET = Object.freeze({
+    provider: 'mimo-token-cn',
+    model: 'mimo-v2.5-pro',
+    endpoint: 'https://token-plan-cn.xiaomimimo.com/v1/chat/completions'
+  });
+
+  function presetForKey(key) {
+    return /^tp-/i.test(String(key || '').trim()) ? MIMO_TOKEN_PRESET : null;
+  }
+
   // 容错 JSON 提取：剥 markdown 围栏 → 直接解析 → 正则抓取对象
   function parseJSON(raw) {
     const c = String(raw).trim().replace(/^```(?:json)?/, '').replace(/```$/, '').trim();
@@ -80,7 +90,7 @@
     return data.choices[0].message.content;
   }
 
-  const A = { AI_PROMPTS, parseJSON, validateAI, callDS };
+  const A = { AI_PROMPTS, MIMO_TOKEN_PRESET, presetForKey, parseJSON, validateAI, callDS };
   root.AppAI = A;
   if (typeof window !== 'undefined') {
     for (const k in A) { if (!(k in window)) window[k] = A[k]; }

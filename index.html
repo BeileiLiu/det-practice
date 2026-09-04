@@ -729,12 +729,19 @@
   @media(prefers-reduced-motion:reduce){
     *,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
   }
+  .ai-setup-intro{margin:0 0 16px;color:var(--muted);line-height:1.6}
+  .ai-key-row{display:flex;gap:8px;align-items:center}
+  .ai-advanced{margin:8px 0 14px;border:1px solid var(--border);border-radius:12px;background:#f8fafc}
+  .ai-advanced summary{cursor:pointer;padding:12px 14px;font-weight:800;color:#52606d}
+  .ai-advanced-body{padding:0 14px 4px}
+  .sound-setting{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .sound-setting input[type="range"]{width:140px}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="brand"><div class="brand-mark">DET</div><div class="brand-copy"><strong>DET Practice Lab</strong><span>AI 评分 · 19 大题型</span></div></div>
+    <div class="brand"><div class="brand-mark">DET</div><div class="brand-copy"><strong>DET Practice Lab</strong><span>专项练习 · AI 反馈</span></div></div>
     <div class="current-type-pill" id="currentTypePill" title="当前选中的题型,点此清空筛选">
       <span class="ctp-label">题型</span>
       <b id="currentTypeName">—</b>
@@ -745,7 +752,7 @@
       <button id="btnRandom">随机一题</button>
       <button id="btnAI">AI 出题</button>
       <button id="btnTest">模拟考试</button>
-      <button id="btnOfficial" class="primary" title="按 2024-07 6 段官方流程顺序出题">📋 官方流程</button>
+      <button id="btnOfficial" title="旧版结构练习，不代表当前官方考试">📋 2024 旧版流程</button>
       <button id="btnGaze" title="启用/关闭视线守护(摄像头检测)">👀 视线守护</button>
       <button id="btnFactory" title="批量 AI 扩充题库(异步、可暂停)">📦 题库工厂</button>
       <button id="btnRubric">评分标准</button>
@@ -784,30 +791,42 @@
 
 <div id="settingsModal" class="modal-bg hidden">
   <div class="modal">
-    <h2>⚙ API 设置</h2>
+    <h2>✨ AI 批改</h2>
+    <p class="ai-setup-intro">粘贴 API Key 即可使用 AI 出题和批改。MiMo Token Plan 的 <b>tp-</b> Key 会自动完成配置。</p>
     <div class="api-status-bar" id="apiStatusBar">
       <span class="api-status-dot" id="apiStatusDot"></span>
       <span class="api-status-text" id="apiStatusText">检查中…</span>
     </div>
     <div class="field">
-      <label>连接方式</label>
-      <select id="setConn" onchange="applyConnUI()" style="width:100%;font-size:14px;padding:9px 11px;border:1px solid var(--border);border-radius:8px;background:#fff">
-        <option value="direct">直连（Key 存浏览器，个人自用）</option>
-        <option value="proxy">本地代理（Key 放服务端，可公开部署）</option>
-      </select>
-      <p class="hint" id="connHint">直连模式：API Key 只存在本机浏览器 localStorage；代理模式：浏览器请求本机 server.py，Key 配置在服务端环境变量，浏览器不接触 Key。</p>
-    </div>
-    <div class="field">
-      <label>API Key <span class="api-key-hint" id="apiKeyHint"></span></label>
-      <div style="display:flex;gap:6px;align-items:center">
-        <input id="setKey" type="password" placeholder="sk-..." style="flex:1">
+      <label>API Key <span class="api-key-hint" id="apiKeyHint">仅保存在当前浏览器</span></label>
+      <div class="ai-key-row">
+        <input id="setKey" type="password" placeholder="tp-... 或 sk-..." style="flex:1" oninput="applyApiKeyPreset()">
         <button type="button" id="toggleKeyVisible" class="small" title="显示/隐藏 key" onclick="toggleKeyVisible()">👁</button>
       </div>
     </div>
-    <div class="field"><label>模型</label><input id="setModel" placeholder="deepseek-chat"></div>
-    <div class="field"><label>接口地址</label><input id="setEndpoint" placeholder="https://api.deepseek.com/chat/completions"></div>
+    <details class="ai-advanced" id="advancedAISettings">
+      <summary>高级设置</summary>
+      <div class="ai-advanced-body">
+        <div class="field">
+          <label>连接方式</label>
+          <select id="setConn" onchange="applyConnUI()" style="width:100%;font-size:14px;padding:9px 11px;border:1px solid var(--border);border-radius:8px;background:#fff">
+            <option value="direct">浏览器直连</option>
+            <option value="proxy">本地代理</option>
+          </select>
+          <p class="hint" id="connHint"></p>
+        </div>
+        <div class="field"><label>模型</label><input id="setModel" placeholder="自动选择"></div>
+        <div class="field"><label>接口地址</label><input id="setEndpoint" placeholder="自动选择" oninput="this.dataset.autoPreset='0';applyApiKeyPreset()"></div>
+      </div>
+    </details>
     <div class="field"><label>目标分（可选，10–160 分制）</label><input id="setGoal" type="number" min="10" max="160" step="5" placeholder="例如 130"></div>
     <div class="field"><label>弱项（可选）</label><input id="setWeak" placeholder="例如：听力、时态"></div>
+    <div class="field sound-setting">
+      <label style="margin:0"><input id="setSound" type="checkbox"> 界面音效</label>
+      <input id="setSoundVolume" type="range" min="0" max="1" step="0.05" aria-label="音效音量">
+      <button type="button" id="soundPreview" class="small">试听</button>
+      <span class="hint" style="margin:0">用于操作与答题反馈；听力题中不会播放按键音。</span>
+    </div>
     <div class="field">
       <label>👀 视线守护(模拟官方监考)</label>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
@@ -824,10 +843,10 @@
         <span class="hint" style="margin:0;flex:1;min-width:180px">配置仅存浏览器 localStorage。换浏览器/清缓存/重装系统都会丢,建议定期导出备份。</span>
       </div>
     </div>
-    <p class="api-note">🔐 保留原有浏览器直连设计：配置仍保存在 localStorage 的 <b>detSettings</b> 中，不会写进项目文件。适合个人电脑自用；如果公开部署，请改用后端代理，避免 API Key 暴露。</p>
+    <p class="api-note">🔐 Key 只保存在当前浏览器。公开部署时，请在高级设置中使用本地代理。</p>
     <div class="q-actions">
       <button id="testBtn">🔌 测试连接</button>
-      <button id="saveBtn" class="primary">保存</button>
+      <button id="saveBtn" class="primary">保存并启用</button>
       <button id="closeSettings">关闭</button>
     </div>
     <p id="testResult" class="hint"></p>
@@ -874,13 +893,17 @@
 <script src="js/engine.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/ai.js"></script>
+<script src="js/rules.js"></script>
+<script src="js/session.js"></script>
+<script src="js/sound.js"></script>
 <script>
 "use strict";
 // ================= 设置 =================
-const DEFAULT_SETTINGS={apiKey:'',model:'deepseek-chat',endpoint:'https://api.deepseek.com/chat/completions',connection:'direct',goal:'',weak:''};
+const DEFAULT_SETTINGS={apiKey:'',model:'deepseek-chat',endpoint:'https://api.deepseek.com/chat/completions',connection:'direct',goal:'',weak:'',soundEnabled:true,soundVolume:0.55};
 // localStorage 读写（9 个 key + schema 版本）已抽离到 js/storage.js（AppStorage 命名空间，
 // 浏览器挂同名全局：readStoredSettings/saveSettings/readUiState/…/getHistory/saveHistory）
 let settings=Object.assign({},DEFAULT_SETTINGS,readStoredSettings());
+AppSound.configure({enabled:settings.soundEnabled!==false,volume:settings.soundVolume});
 // 旧常量名兼容别名 → AppStorage.KEYS（9 个 key 的权威定义在 js/storage.js）
 const SETTINGS_KEY=AppStorage.KEYS.settings, HISTORY_KEY=AppStorage.KEYS.history, UI_KEY=AppStorage.KEYS.ui, ADAPTIVE_KEY=AppStorage.KEYS.adaptive, QSTORE_KEY=AppStorage.KEYS.qstore, MISTAKE_KEY=AppStorage.KEYS.mistakes, FAVORITE_KEY=AppStorage.KEYS.favorites;
 // ================= 设置 UI 状态显示 =================
@@ -918,11 +941,32 @@ function applyConnUI(){
   const sel=document.getElementById('setConn'),key=document.getElementById('setKey'),endpoint=document.getElementById('setEndpoint'),hint=document.getElementById('connHint');
   if(!sel)return;
   const proxy=sel.value==='proxy';
-  if(key){key.disabled=proxy;if(proxy)key.value='';}
+  if(key)key.disabled=proxy;
   if(endpoint)endpoint.disabled=proxy;
   if(hint)hint.textContent=proxy
     ?'代理模式：本机运行 server.py，Key 配置在服务端环境变量 DET_PROXY_KEY；浏览器只发请求、不接触 Key，适合公开部署。'
     :'直连模式：API Key 只存在本机浏览器 localStorage，适合个人自用；公开部署请改用代理。';
+}
+function applyApiKeyPreset(){
+  const key=document.getElementById('setKey');
+  const model=document.getElementById('setModel');
+  const endpoint=document.getElementById('setEndpoint');
+  const hint=document.getElementById('apiKeyHint');
+  if(!key||!model||!endpoint)return;
+  const preset=AppAI.presetForKey(key.value);
+  if(preset){
+    const canAuto=!endpoint.value.trim()||endpoint.value.trim()===DEFAULT_SETTINGS.endpoint||endpoint.dataset.autoPreset==='1';
+    if(canAuto){endpoint.value=preset.endpoint;endpoint.dataset.autoPreset='1';}
+    if(!model.value.trim()||model.value.trim()==='deepseek-chat')model.value=preset.model;
+    if(endpoint.value.trim()===preset.endpoint)endpoint.dataset.autoPreset='1';
+    if(hint){
+      const url=endpoint.value.trim();
+      const region=url.includes('token-plan-sgp.')?'新加坡节点':url.includes('token-plan-ams.')?'欧洲节点':url.includes('token-plan-cn.')?'中国节点':'自定义节点';
+      hint.textContent='已识别 MiMo Token Plan · '+region;
+    }
+  }else if(hint){
+    hint.textContent='仅保存在当前浏览器';
+  }
 }
 function toggleKeyVisible(){
   const el=document.getElementById('setKey');
@@ -1008,13 +1052,13 @@ function showSetupBanner(){
 // 状态对象初始化（读写函数见 js/storage.js）
 let uiState=Object.assign({sidebarCollapsed:false,openGroups:['reading'],bandFilter:'all',adaptiveMode:false,adaptiveBand:'90'},readUiState());
 
-// ================= 题型配置（2026 DET 19 题型）=================
+// ================= 练习组件配置（当前考试规则见 AppRules.CURRENT）=================
 const TC={
   rs:{label:'词汇判断',sub:'Read & Select',time:30},
   fib:{label:'完形打字',sub:'Read & Complete',time:180},
   fibw:{label:'选词填空',sub:'Fill in the Blanks',time:180},
   lt:{label:'听写',sub:'Listen & Type',time:60},
-  ra:{label:'朗读',sub:'Read Aloud',time:60},
+  ra:{label:'朗读训练',sub:'Read Aloud · 非当前考试题型',time:60},
   ir:{label:'互动阅读',sub:'Interactive Reading',time:420},
   il:{label:'互动听力',sub:'Interactive Listening',time:480},
   sp:{label:'看图说话',sub:'Speak About the Photo',time:90},
@@ -1261,6 +1305,7 @@ const irState={q:null,step:0,points:0,answers:[],sel:'',start:0};
 const rsState={idx:0,ans:[],pending:null,advancing:false};
 const fibwState={idx:0,ans:[]};
 let raState={text:'',transcript:'',plays:0,startTime:0,finished:false}; // 需 let：renderRA 会整体重赋值（原 const 导致朗读题一渲染即崩）
+let ltSession=null;
 
 // ================= 视线守护 (参考官方 DET 监考设计)=================
 // 设计思路(对标官方多邻国英语考试监考):
@@ -2091,7 +2136,7 @@ function renderQuestionNavigation(){
     group.items.forEach(k=>{
       const b=document.createElement('button');b.type='button';b.className='type-tab';b.dataset.key=k;
       b.innerHTML=`<span class="type-tab-copy"><span>${TC[k].label}</span><span class="q-sub">${TC[k].sub}</span></span><span class="type-score">—</span>`;
-      b.onclick=()=>showType(k);box.appendChild(b);
+      b.onclick=()=>showTypePreview(k);box.appendChild(b);
     });
     typeTabs.appendChild(section);
   });
@@ -2160,7 +2205,7 @@ function closeMobileNav(){document.body.classList.remove('nav-drawer-open');}
   });
 })();
 function switchType(delta){
-  let idx=TABORDER.indexOf(currentType);if(idx<0)idx=0;showType(TABORDER[(idx+delta+TABORDER.length)%TABORDER.length]);
+  let idx=TABORDER.indexOf(currentType);if(idx<0)idx=0;showTypePreview(TABORDER[(idx+delta+TABORDER.length)%TABORDER.length]);
 }
 // bookItemHtml / showStudyBook / practiceBookItem / removeBookItem 的最终定义
 // 在下方「复习夹增强：筛选 / 掌握 / 连续刷」小节(含词条 rs-word 分支)。
@@ -2348,6 +2393,25 @@ function refreshCurrentTypePill(type){
   }
 }
 function renderCurrent(type,q){clearTimer();resultArea.innerHTML='';document.body.classList.toggle('il-active',type==='il');RENDERERS[type](q);}
+function showTypePreview(type,preserveGroup){
+  currentView='practice';currentReview=null;currentType=type;currentQ=null;clearTimer();resultArea.innerHTML='';
+  document.body.classList.toggle('il-active',type==='il');
+  uiState.lastType=type;saveUiState();
+  if(!preserveGroup)openGroupForType(type);
+  setActiveTab(type);updateDifficultyHint(type);
+  const kicker=document.getElementById('practiceKicker');
+  if(kicker)kicker.textContent=TC[type].label+' · 准备好再开始';
+  const last=latestScoreForType(type);
+  qArea.innerHTML=`<div class="card official-task-card practice-ready-card"><div class="exam-stage"><div class="official-task-inner">
+    <span class="feedback-kicker">${esc(groupForType(type)?.label||'专项练习')}</span>
+    <h2 class="exam-title">${esc(TC[type].label)}</h2>
+    <p class="q-instr">${esc(TC[type].sub)} · 单题最长 ${fmt(TC[type].time)}。点击开始后才会显示题目并计时，你可以先调整难度或查看评分标准。</p>
+    ${last!=null?`<p class="hint">最近练习估分：${last}</p>`:''}
+    <div class="q-actions" style="justify-content:center"><button id="startPracticeBtn" class="primary" type="button">开始本题</button><button type="button" onclick="showRubric('${type}')">先看评分标准</button></div>
+  </div></div></div>`;
+  qArea.querySelector('#startPracticeBtn').onclick=()=>{AppSound.play('start');showType(type,true);};
+  closeMobileNav();
+}
 function showType(type,preserveGroup){
   currentView='practice';currentReview=null;currentType=type;clearTimer();resultArea.innerHTML='';
   document.body.classList.toggle('il-active',type==='il');
@@ -2365,7 +2429,7 @@ function showType(type,preserveGroup){
 function cardHead(label,sub,t,badge){
   const diff=(badge||questionDifficultyBadge(currentQ))+pickInfoBadge();
   const fav=isFavorited()? ' active':'';
-  return `<div class="q-head exam-topbar"><div class="exam-timer"><span class="exam-clock" aria-hidden="true"></span><span class="timer" id="timer">${fmt(t)}</span><span class="exam-time-label">for this question</span></div><div class="q-head-actions"><span class="q-type"><span class="q-type-title">${esc(label)}</span><span class="q-sub">${esc(sub)}</span><span class="q-badges">${diff}</span></span><button id="favoriteBtn" class="favorite-btn${fav}" type="button" onclick="toggleFavoriteCurrent()" title="收藏本题并填写原因">${fav?'★':'☆'}</button><button id="pauseTimerBtn" class="pause-timer" type="button" onclick="toggleTimerPause()" disabled>暂停时间</button><button class="rubric-link" type="button" onclick="showRubric(currentType)">评分</button><button class="exam-close" type="button" onclick="showType(currentType)" aria-label="重新开始">×</button></div></div>`;
+  return `<div class="q-head exam-topbar"><div class="exam-timer"><span class="exam-clock" aria-hidden="true"></span><span class="timer" id="timer">${fmt(t)}</span><span class="exam-time-label">for this question</span></div><div class="q-head-actions"><span class="q-type"><span class="q-type-title">${esc(label)}</span><span class="q-sub">${esc(sub)}</span><span class="q-badges">${diff}</span></span><button id="favoriteBtn" class="favorite-btn${fav}" type="button" onclick="toggleFavoriteCurrent()" title="收藏本题并填写原因">${fav?'★':'☆'}</button><button id="pauseTimerBtn" class="pause-timer" type="button" onclick="toggleTimerPause()" disabled>暂停时间</button><button class="rubric-link" type="button" onclick="showRubric(currentType)">评分</button><button class="exam-close" type="button" onclick="showTypePreview(currentType)" aria-label="退出本题">×</button></div></div>`;
 }
 function aiBtn(){return `<button id="aiBtn" class="ai">🔄 AI 出题</button>`;}
 function photoHtml(q){
@@ -2698,6 +2762,7 @@ function fibwFinish(q){
 
 // ================= 听写 LT =================
 function renderLT(q){
+  ltSession=AppSession.create({type:'lt',questionId:questionSignature(q),durationSec:q.time||TC.lt.time});
   qArea.innerHTML=`<div class="card listen-type-card">${cardHead(TC.lt.label,TC.lt.sub,q.time||TC.lt.time)}
     <div class="exam-stage">
       <h2 class="exam-title">Type what you hear</h2>
@@ -2728,19 +2793,23 @@ function renderLT(q){
       updateReplay();
       setTimeout(()=>playBtn.classList.remove('is-playing'),Math.min(4200,Math.max(1400,(q.sentence||'').split(/\s+/).length*420)));
     }
-    if(!started){started=true;startTimer(q.time||TC.lt.time,()=>submitLT(q));}
+    if(!started){started=true;AppSession.start(ltSession);startTimer(q.time||TC.lt.time,()=>submitLT(q,'timeout'));}
   };
-  input.addEventListener('input',()=>{submit.disabled=!input.value.trim();});
-  qArea.querySelector('#submitBtn').onclick=()=>submitLT(q);
+  input.addEventListener('input',()=>{AppSession.updateAnswer(ltSession,input.value);submit.disabled=!input.value.trim();});
+  qArea.querySelector('#submitBtn').onclick=()=>submitLT(q,'manual');
 }
-function submitLT(q){
+function submitLT(q,reason){
   clearTimer();
-  const input=qArea.querySelector('#ltInput').value.trim();
+  const inputEl=qArea.querySelector('#ltInput');
+  if(inputEl)AppSession.updateAnswer(ltSession,inputEl.value);
+  const submission=AppSession.submit(ltSession,reason||'manual');
+  if(!submission)return;
+  const input=String(submission.answer||'').trim();
   if(!input){showResult('听写',0,'没有输入内容。原句：'+q.sentence);logHistory('lt',0,'空答');return;}
   const assessment=listenTypeAssessment(q.sentence,input);
   const deltaText=assessment.wordDelta===0?'词数匹配':assessment.wordDelta>0?`多 ${assessment.wordDelta} 个词`:`漏 ${Math.abs(assessment.wordDelta)} 个词`;
   showResult('听写',detFromScore(assessment.score),`听写准确率 ${assessment.score}% · ${deltaText} · 拼写相似度 ${assessment.spelling}% · 原句：「${q.sentence}」`);
-  logHistory('lt',detFromScore(assessment.score),`听写 ${assessment.score}%`,{answer:input,reference:q.sentence,accuracy:assessment.score,detail:assessment});
+  logHistory('lt',detFromScore(assessment.score),`听写 ${assessment.score}%`,{answer:input,reference:q.sentence,accuracy:assessment.score,detail:assessment,session:submission});
 }
 
 // ================= 互动阅读 IR =================
@@ -3751,6 +3820,7 @@ function showResult(label,score,note,dims,type,accuracy){
   html+='</div><div class="q-actions" style="margin-top:12px"><button class="primary" onclick="continuePractice()">NEXT QUESTION →</button><button onclick="showRubric(currentType)">查看评分标准</button></div></div>';
   resultArea.innerHTML=html;
   recordMistakeFromResult(resultType,label,s,note,dims);
+  if(!document.body.classList.contains('testing'))AppSound.play(s!=null&&s>=120?'success':'improve');
   if(!translation)loadChineseTranslation(translationId,resultType,label,note,dims);
   setTimeout(()=>resultArea.scrollIntoView({behavior:'smooth',block:'nearest'}),0);
 }
@@ -3856,6 +3926,9 @@ document.getElementById('btnSettings').onclick=()=>{
   applyConnUI();
   document.getElementById('setGoal').value=settings.goal;
   document.getElementById('setWeak').value=settings.weak;
+  document.getElementById('setSound').checked=settings.soundEnabled!==false;
+  document.getElementById('setSoundVolume').value=settings.soundVolume==null?0.55:settings.soundVolume;
+  applyApiKeyPreset();
   document.getElementById('testResult').textContent='';
   // 切到密码模式防止不小心暴露
   const keyEl=document.getElementById('setKey');
@@ -3864,14 +3937,17 @@ document.getElementById('btnSettings').onclick=()=>{
 };
 document.getElementById('closeSettings').onclick=()=>{closeModal('settingsModal');refreshApiStatusBar();};
 document.getElementById('saveBtn').onclick=()=>{
+  applyApiKeyPreset();
   const connSel=document.getElementById('setConn');
-  settings={apiKey:document.getElementById('setKey').value.trim(),model:document.getElementById('setModel').value.trim()||'deepseek-chat',endpoint:document.getElementById('setEndpoint').value.trim()||DEFAULT_SETTINGS.endpoint,connection:(connSel&&connSel.value)||'direct',goal:document.getElementById('setGoal').value.trim(),weak:document.getElementById('setWeak').value.trim()};
+  settings=Object.assign({},settings,{apiKey:document.getElementById('setKey').value.trim(),model:document.getElementById('setModel').value.trim()||'deepseek-chat',endpoint:document.getElementById('setEndpoint').value.trim()||DEFAULT_SETTINGS.endpoint,connection:(connSel&&connSel.value)||'direct',goal:document.getElementById('setGoal').value.trim(),weak:document.getElementById('setWeak').value.trim(),soundEnabled:document.getElementById('setSound').checked,soundVolume:Number(document.getElementById('setSoundVolume').value)});
+  AppSound.configure({enabled:settings.soundEnabled,volume:settings.soundVolume});
   saveSettings();updateStudyOverview();refreshApiStatusBar();
   document.getElementById('testResult').textContent='已保存。目标分按 10–160 分制使用。';
   showToast('设置已保存 · localStorage 永久保存');
 };
 document.getElementById('testBtn').onclick=async()=>{
   const el=document.getElementById('testResult');el.textContent='连接中…';el.className='hint';
+  applyApiKeyPreset();
   const connSel=document.getElementById('setConn');const viaProxy=connSel&&connSel.value==='proxy';
   const key=document.getElementById('setKey').value.trim();
   const model=document.getElementById('setModel').value.trim()||'deepseek-chat';
@@ -3886,6 +3962,23 @@ document.getElementById('testBtn').onclick=async()=>{
     settings._lastTest={ok:true,at:Date.now()};saveSettings();refreshApiStatusBar();
   }catch(err){el.textContent='失败：'+err.message+'（若报 CORS，需要搭配本地代理服务使用）';el.className='hint err';settings._lastTest={ok:false,at:Date.now()};saveSettings();refreshApiStatusBar();}
 };
+document.getElementById('setSound').onchange=()=>{
+  AppSound.configure({enabled:document.getElementById('setSound').checked,volume:Number(document.getElementById('setSoundVolume').value)});
+  if(document.getElementById('setSound').checked)AppSound.play('success');
+};
+document.getElementById('setSoundVolume').oninput=()=>AppSound.configure({enabled:document.getElementById('setSound').checked,volume:Number(document.getElementById('setSoundVolume').value)});
+document.getElementById('soundPreview').onclick=()=>{
+  AppSound.configure({enabled:true,volume:Number(document.getElementById('setSoundVolume').value)});
+  AppSound.play('complete');
+};
+document.addEventListener('pointerdown',e=>{
+  const btn=e.target&&e.target.closest?e.target.closest('button'):null;
+  if(!btn||btn.disabled||document.body.classList.contains('testing'))return;
+  if(btn.id==='startPracticeBtn'||btn.id==='soundPreview')return;
+  const audioTask=qArea.contains(btn)&&['lt','il','isp','sp','rtsp','ss','ra'].includes(currentType);
+  if(audioTask)return;
+  AppSound.play('tap');
+},true);
 document.getElementById('btnHistory').onclick=()=>{renderHistory();openModal('historyModal');};
 document.getElementById('closeHistory').onclick=()=>closeModal('historyModal');
 document.getElementById('btnRubric').onclick=()=>showRubric(currentType);
@@ -3939,22 +4032,7 @@ function setupTestMode(step){
   const sb=qArea.querySelector('#submitBtn');
   if(sb){sb.textContent='下一题 →';sb.disabled=false;sb.className='primary';sb.onclick=()=>testNext();}
   if(type==='rs'){
-    // 测试模式:每 1.5s 自动点一词(70% 准确率模拟),走完 9 词后自动 testNext
-    const myIdx=testStepIdx;const total=step.q.words.length;
-    const driver=setInterval(()=>{
-      if(testStepIdx!==myIdx){clearInterval(driver);return;}
-      if(rsState.idx>=total){
-        clearInterval(driver);
-        setTimeout(()=>testNext(),800);
-        return;
-      }
-      const w=step.q.words[rsState.idx];
-      // 70% 模拟正确率,避免和真实用户答题完全一致
-      const correct=Math.random()<0.7;
-      const ans=correct?!!(w.real===true||w.real===1||w.real==='true'||w.real==='1'):!(w.real===true||w.real===1||w.real==='true'||w.real==='1');
-      const btn=qArea.querySelector(ans?'#yesBtn':'#noBtn');
-      if(btn)btn.click();
-    },1500);
+    // 词汇判断由考生逐词作答；完成最后一个词时 renderer 会推进考试。
     return;
   }
   if(type==='lt'){
@@ -4139,9 +4217,10 @@ function renderTestReport(grades){
   html+='<div class="comment"><p>说明：总分按各题型得分平均估算，仅供参考；真实 DET 总分由官方自适应算法给出。互动阅读/互动听力在整场考试中每次出 12 题左右，本模拟用一组代表题型。</p></div>';
   html+='<div class="q-actions"><button onclick="afterTest()">返回练习</button></div></div>';
   resultArea.innerHTML=html;
+  AppSound.play('complete');
   logHistory('test',overall!=null?overall:0,'模拟考试 '+testSteps.length+' 题',{feedback:{comment:'模拟考试按本次各模块练习分汇总；真实 DET 使用官方自适应算法。'},rows,subscores:subs});
 }
-function afterTest(){testRunning=false;showType('rs');}
+function afterTest(){testRunning=false;showTypePreview('rs');}
 async function startTest(){
   if(testRunning)return;
   if(!confirm('开始模拟考试？\n\n按真实 DET 流程连续作答：每题限时与真实考试一致（界面不显示倒计时），时间到自动进入下一题；中途不能暂停。时长约 45–60 分钟。'))return;
@@ -4159,10 +4238,10 @@ async function startTest(){
   renderTestStep(0);
 }
 document.getElementById('btnQuitTest').onclick=()=>{
-  if(confirm('退出考试？本次成绩不计入记录。')){clearTimer();stopRecord();testRunning=false;document.body.classList.remove('testing');document.getElementById('testBar').classList.add('hidden');qArea.classList.remove('test-mode');showType('rs');}
+  if(confirm('退出考试？本次成绩不计入记录。')){clearTimer();stopRecord();testRunning=false;document.body.classList.remove('testing');document.getElementById('testBar').classList.add('hidden');qArea.classList.remove('test-mode');showTypePreview('rs');}
 };
 
-// ================= 官方流程模拟(2024-07 6 段结构)=================
+// ================= 2024 旧版流程练习（不代表当前官方考试）=================
 // 严格按官方 Technical Manual §5.1 的 6 段顺序与各段题量范围生成模拟
 // Section 1: Yes/No Vocab (RS) × 15-18
 // Section 2: Voc in Context (FIB) × 6-9
@@ -4257,7 +4336,7 @@ async function startOfficialFlow(){
   if(testRunning)return;
   const plan=OFFICIAL_SECTION_PLAN;
   const total=buildOfficialStepList().length;
-  if(!confirm('开始官方流程模拟(2024-07 6 段结构)？\n\n'+plan.rs.desc+' ×15-18\n'+plan.fib.desc+' ×6-9\n'+plan.fibw.desc+'\n'+plan.lt.desc+'\n'+plan.ra.desc+'\n'+plan.ir.desc+'\n'+plan.il.desc+'\n'+plan.wp.desc+'\n'+plan.sp.desc+'\n'+plan.rtsp.desc+'\n'+plan.iw.desc+'\n'+plan.ws.desc+'\n'+plan.ss.desc+'\n\n本场共 '+(total)+' 题,约 60 分钟。按真实测试流程连续作答,中途不能暂停。'))return;
+  if(!confirm('开始 2024 旧版流程练习？\n\n注意：此流程保留用于旧版题型练习，不代表当前官方考试。\n\n'+plan.rs.desc+' ×15-18\n'+plan.fib.desc+' ×6-9\n'+plan.fibw.desc+'\n'+plan.lt.desc+'\n'+plan.ra.desc+'\n'+plan.ir.desc+'\n'+plan.il.desc+'\n'+plan.wp.desc+'\n'+plan.sp.desc+'\n'+plan.rtsp.desc+'\n'+plan.iw.desc+'\n'+plan.ws.desc+'\n'+plan.ss.desc+'\n\n本场共 '+(total)+' 题,约 60 分钟,中途不能暂停。'))return;
   testRunning=true;
   officialFlow={usedIR:{},ilPair:null};
   document.body.classList.add('testing');
@@ -4265,8 +4344,8 @@ async function startOfficialFlow(){
   testResults=[];testIwState={};
   testGazeBaseline={warning:gazeState.warningCount,critical:gazeState.criticalCount};
   for(const k in ispAnswers)delete ispAnswers[k];
-  qArea.innerHTML='<div class="card official-task-card"><div class="exam-stage"><div class="official-task-inner"><h2 class="exam-title">Preparing official flow</h2><p class="q-instr">正在按官方 6 段结构生成试卷(共 '+total+' 题)…若已填 API Key 会现场出题,约 30–60 秒</p></div></div></div>';
-  setTestPhase('准备官方试卷…');
+  qArea.innerHTML='<div class="card official-task-card"><div class="exam-stage"><div class="official-task-inner"><h2 class="exam-title">Preparing legacy practice</h2><p class="q-instr">正在按 2024 旧版结构生成练习(共 '+total+' 题)…若已填 API Key 会现场出题,约 30–60 秒</p></div></div></div>';
+  setTestPhase('准备旧版流程练习…');
   testSteps=await buildOfficialSteps();
   testStepIdx=0;
   renderTestStep(0);
@@ -4300,14 +4379,14 @@ document.getElementById('bandSel').onchange=()=>{
 syncAdaptiveButton();
 if('speechSynthesis' in window){speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();}
 updateStudyOverview();
-showType(TABORDER.includes(uiState.lastType)?uiState.lastType:'rs',true);
+showTypePreview(TABORDER.includes(uiState.lastType)?uiState.lastType:'rs',true);
 refreshApiStatusBar();
 refreshCurrentTypePill();
 // “清空题型”按钮
 const ctpClear=document.getElementById('currentTypeClear');
 if(ctpClear)ctpClear.onclick=()=>{
   uiState.lastType='rs';saveUiState();
-  showType('rs');
+  showTypePreview('rs');
   refreshCurrentTypePill('rs');
   // 关闭移动抽屉,如果有打开
   closeMobileNav();

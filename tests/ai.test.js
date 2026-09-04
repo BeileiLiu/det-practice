@@ -11,6 +11,12 @@ const TC_STUB = {
   rtsp: { time: 90 }, isp: { time: 180 }, ss: { time: 180 }, wp: { time: 60 },
   iw: { time: 600 }, ws: { time: 300 }
 };
+test('MiMo Token Plan Key 自动选择中国节点与默认模型', () => {
+  assert.deepEqual(A.presetForKey(' tp-example '), A.MIMO_TOKEN_PRESET);
+  assert.equal(A.presetForKey('sk-example'), null);
+  assert.equal(A.MIMO_TOKEN_PRESET.model, 'mimo-v2.5-pro');
+  assert.match(A.MIMO_TOKEN_PRESET.endpoint, /token-plan-cn\.xiaomimimo\.com\/v1\/chat\/completions$/);
+});
 // ---------- parseJSON ----------
 test('parseJSON：直接 JSON / markdown 围栏 / 前后杂文 / 非法输入', () => {
   assert.deepEqual(A.parseJSON('{"a":1}'), { a: 1 });

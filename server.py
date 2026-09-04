@@ -41,6 +41,30 @@ PROXY_KEY = ''
 PROXY_ENDPOINT = 'https://api.deepseek.com/chat/completions'
 ROOT = os.path.dirname(os.path.abspath(__file__))
 UPSTREAM_TIMEOUT = 120
+PUBLIC_ROOT_FILES = {'index.html'}
+PUBLIC_DIRS = {'js', 'images', 'fonts'}
+
+
+def _public_file_for_path(url_path, root=ROOT):
+    """把 URL 映射到允许公开的静态文件；服务端配置和源码一律不提供。"""
+    path = url_path.split('?', 1)[0]
+    if path in ('', '/'):
+        path = '/index.html'
+    parts = [part for part in path.replace('\\', '/').split('/') if part]
+    if not parts or any(part in ('.', '..') or part.startswith('.') for part in parts):
+        return None
+    if len(parts) == 1:
+        if parts[0] not in PUBLIC_ROOT_FILES:
+            return None
+    elif parts[0] not in PUBLIC_DIRS:
+        return None
+    fp = os.path.abspath(os.path.join(root, *parts))
+    try:
+        if os.path.commonpath((os.path.abspath(root), fp)) != os.path.abspath(root):
+            return None
+    except ValueError:
+        return None
+    return fp if os.path.isfile(fp) else None
 
 
 def _load_env_file(path):
@@ -60,7 +84,7 @@ def _load_env_file(path):
 
 # 优先级：命令行端口 > 系统环境变量 > server.env 文件
 _FILE_ENV = _load_env_file(os.path.join(ROOT, 'server.env'))
-if len(sys.argv) > 1:
+if __name__ == '__main__' and len(sys.argv) > 1:
     PORT = int(sys.argv[1])
 elif _FILE_ENV.get('PORT') or os.environ.get('PORT'):
     PORT = int(_FILE_ENV.get('PORT') or os.environ.get('PORT'))
@@ -94,11 +118,8 @@ class Handler(BaseHTTPRequestHandler):
                 'port': PORT
             })
             return
-        if path in ('/', '/index.html'):
-            path = '/index.html'
-        rel = path.lstrip('/')
-        fp = os.path.normpath(os.path.join(ROOT, rel))
-        if not fp.startswith(ROOT) or not os.path.isfile(fp):
+        fp = _public_file_for_path(path)
+        if not fp:
             self.send_error(404)
             return
         with open(fp, 'rb') as f:

@@ -4,7 +4,7 @@
 // 运行：node smoke.js（NODE_PATH 指向 jsdom 所在 node_modules）
 // 覆盖：初始化 / RS 全程答题 / 题型切换 / 题库工厂面板 / 无 Key AI 出题错误路径 /
 //       AI 出题成功链路（mock 上游）/ AI 批改链路（mock 评分 JSON）/
-//       模拟考试（19 步手动全程推进 → 自动出报告）/ 按钮退出 / 官方流程 / 学习夹
+//       模拟考试（19 步手动全程推进 → 自动出报告）/ 按钮退出 / 2024 旧版流程 / 学习夹
 // 注意：顶层 let/const（RENDERERS/currentType/testSteps 等）不挂在 window 上，须用 w.eval 读取
 const { JSDOM, VirtualConsole } = require('jsdom');
 
@@ -86,11 +86,26 @@ function mockFetch(url, opts) {
   await sleep(900);
 
   // ---- 1. 初始化 ----
-  assert(w.AppStorage && w.AppAI && w.DETEngine, '三个模块全局存在');
+  assert(w.AppStorage && w.AppAI && w.DETEngine && w.AppSound, '核心模块全局存在');
   assert(E('typeof RENDERERS === "object" && Object.keys(RENDERERS).length') === 14, 'RENDERERS 14 题型: ' + E('Object.keys(RENDERERS).length'));
   assert(E('currentType') === 'rs', '初始化题型 rs, 实际 ' + E('currentType'));
-  assert(w.document.querySelector('#questionArea .card'), '答题卡已渲染');
+  assert(w.document.querySelector('#questionArea .practice-ready-card'), '首页显示不计时的练习准备卡');
+  assert(!E('timerId'), '首次进入没有倒计时');
+  w.document.querySelector('#startPracticeBtn').click();
+  await sleep(100);
   assert(w.document.querySelector('#rsWord') && w.document.querySelector('#rsWord').textContent.trim(), 'RS 首个单词可见');
+
+  // ---- 1.5 AI 快速配置 + 音效设置 ----
+  w.document.querySelector('#btnSettings').click();
+  await sleep(80);
+  const advanced = w.document.querySelector('#advancedAISettings');
+  assert(advanced && !advanced.open, 'AI 高级设置默认收起');
+  const keyInput = w.document.querySelector('#setKey');
+  keyInput.value = 'tp-smoke'; keyInput.dispatchEvent(new w.Event('input'));
+  assert(w.document.querySelector('#setModel').value === 'mimo-v2.5-pro', 'tp- Key 自动选择 MiMo 模型');
+  assert(/token-plan-cn\.xiaomimimo\.com/.test(w.document.querySelector('#setEndpoint').value), 'tp- Key 自动选择 MiMo 中国节点');
+  assert(w.document.querySelector('#setSound') && w.document.querySelector('#setSoundVolume') && w.document.querySelector('#soundPreview'), '音效开关、音量与试听可用');
+  w.document.querySelector('#closeSettings').click();
 
   // ---- 2. 答完 9 词 → 结果卡 + 历史 ----
   for (let i = 0; i < 9; i++) {
@@ -109,6 +124,25 @@ function mockFetch(url, opts) {
   await sleep(250);
   assert(E('currentType') === 'fib', '切到 fib, 实际 ' + E('currentType'));
   assert(w.document.querySelector('.fib-wordbox'), 'FIB 空格渲染');
+
+  // ---- 3.5 听写会话：答案快照 + 幂等提交 ----
+  w.showType('lt');
+  await sleep(150);
+  const ltPlay = w.document.querySelector('#playBtn');
+  const ltInput = w.document.querySelector('#ltInput');
+  assert(ltPlay && ltInput, 'LT 播放和输入控件渲染');
+  if (ltPlay) ltPlay.click();
+  if (ltInput) {
+    ltInput.value = E('currentQ.sentence');
+    ltInput.dispatchEvent(new w.Event('input'));
+  }
+  const ltBefore = w.AppStorage.getHistory().filter(x => x.type === 'lt').length;
+  const ltQuestion = w.eval('currentQ');
+  w.submitLT(ltQuestion, 'manual');
+  w.submitLT(ltQuestion, 'timeout');
+  const ltItems = w.AppStorage.getHistory().filter(x => x.type === 'lt');
+  assert(ltItems.length === ltBefore + 1, 'LT 重复提交只记一次');
+  assert(ltItems[0].details && ltItems[0].details.session && ltItems[0].details.session.reason === 'manual', 'LT 历史包含会话摘要');
 
   // ---- 4. 题库工厂面板：打开/关闭 ----
   w.openFactoryDialog();
@@ -235,11 +269,12 @@ function mockFetch(url, opts) {
 
   // ---- 8. 模拟考试：启动 → 手动推进 19 步 → 自动出报告 ----
   w.startTest();
-  await sleep(1200);
+  await sleep(1800);
   assert(w.document.body.classList.contains('testing'), '考试模式 body.testing 生效');
   assert(E('Array.isArray(testSteps) ? testSteps.length : -1') === 19, '模拟考试 19 步: ' + E('Array.isArray(testSteps) ? testSteps.length : -1'));
   const phase = w.document.querySelector('#testPhase');
   assert(phase && /第 \d+/.test(phase.textContent || ''), '考试阶段推进: ' + (phase && phase.textContent));
+  assert(E('rsState.idx') === 0, '模拟考试不会替考生自动回答词汇题');
   // 手动推进 19 步（每步清掉限时器避免异步干扰）
   for (let i = 0; i < 19; i++) {
     w.clearTimer && w.clearTimer();
@@ -269,13 +304,13 @@ function mockFetch(url, opts) {
   await sleep(300);
   assert(!w.document.body.classList.contains('testing'), '退出按钮可离开考试');
 
-  // ---- 10. 官方流程（54 步按官方 6 段结构）全程推进 → 自动出报告 ----
+  // ---- 10. 2024 旧版流程（54 步）全程推进 → 自动出报告 ----
   w.startOfficialFlow();
   await sleep(2500);
   const officialN = E('Array.isArray(testSteps) ? testSteps.length : -1');
-  assert(officialN === 54, '官方流程按 OFFICIAL_SECTION_PLAN 生成 54 步: ' + officialN);
+  assert(officialN === 54, '2024 旧版流程按 OFFICIAL_SECTION_PLAN 生成 54 步: ' + officialN);
   assert(E('testSteps.slice(24,28).map(s=>s.type).join(",")') === 'fibw,lt,ra,fibw', '第 3 段 FIBW/LT/RA 交替: ' + E('testSteps.slice(24,28).map(s=>s.type).join(",")'));
-  assert(w.document.body.classList.contains('testing'), '官方流程 testing 生效');
+  assert(w.document.body.classList.contains('testing'), '2024 旧版流程 testing 生效');
   for (let i = 0; i < officialN; i++) {
     w.clearTimer && w.clearTimer();
     w.stopRecord && w.stopRecord();
@@ -283,8 +318,8 @@ function mockFetch(url, opts) {
     await sleep(120);
   }
   await sleep(1600); // testFinish 批改降级循环 + 报告渲染
-  assert(w.document.querySelector('#resultArea .report-table'), '官方流程报告渲染');
-  assert(!w.document.body.classList.contains('testing'), '官方流程结束退出考试模式');
+  assert(w.document.querySelector('#resultArea .report-table'), '2024 旧版流程报告渲染');
+  assert(!w.document.body.classList.contains('testing'), '2024 旧版流程结束退出考试模式');
   w.afterTest();
   await sleep(200);
 
@@ -296,7 +331,7 @@ function mockFetch(url, opts) {
   await sleep(150);
 
   const verdict = errors.length ? 'FAIL' : 'PASS';
-  console.log('SMOKE ' + verdict + ' · 检查点 38 · 错误数 ' + errors.length);
+  console.log('SMOKE ' + verdict + ' · 检查点 48 · 错误数 ' + errors.length);
   errors.slice(0, 14).forEach(e => console.log('  ERR: ' + String(e).slice(0, 260)));
   dom.window.close();
   process.exitCode = verdict === 'FAIL' ? 1 : 0;
