@@ -86,11 +86,16 @@ function mockFetch(url, opts) {
   await sleep(900);
 
   // ---- 1. 初始化 ----
-  assert(w.AppStorage && w.AppAI && w.DETEngine && w.AppSound, '核心模块全局存在');
+  assert(w.AppStorage && w.AppAI && w.DETEngine && w.AppSound && w.AppLearning && w.AppViews, '核心模块全局存在');
   assert(E('typeof RENDERERS === "object" && Object.keys(RENDERERS).length') === 14, 'RENDERERS 14 题型: ' + E('Object.keys(RENDERERS).length'));
-  assert(E('currentType') === 'rs', '初始化题型 rs, 实际 ' + E('currentType'));
-  assert(w.document.querySelector('#questionArea .practice-ready-card'), '首页显示不计时的练习准备卡');
+  assert(E('currentView') === 'home', '初始化进入学习首页, 实际 ' + E('currentView'));
+  assert(E('currentType') === null, '首页没有强制选中题型');
+  assert(w.document.querySelector('#questionArea .learning-home'), '首页学习面板可见');
   assert(!E('timerId'), '首次进入没有倒计时');
+  w.document.querySelector('#homeStartBtn').click();
+  await sleep(80);
+  assert(w.document.querySelector('#questionArea .practice-ready-card'), '推荐练习先显示任务说明');
+  assert(!E('timerId'), '任务说明页仍未开始倒计时');
   w.document.querySelector('#startPracticeBtn').click();
   await sleep(100);
   assert(w.document.querySelector('#rsWord') && w.document.querySelector('#rsWord').textContent.trim(), 'RS 首个单词可见');

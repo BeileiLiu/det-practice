@@ -12,7 +12,6 @@
   @font-face{font-family:'Nunito';font-style:normal;font-weight:800;font-display:swap;src:url('fonts/nunito-latin-800-normal.woff2') format('woff2')}
   @font-face{font-family:'Nunito';font-style:normal;font-weight:900;font-display:swap;src:url('fonts/nunito-latin-900-normal.woff2') format('woff2')}
   /* Nunito © 2014 Nunito Project Authors · SIL OFL-1.1（见 fonts/OFL-Nunito.txt）· 本地 woff2，离线可用 */
-<style>
   :root{
     --accent:#58cc02; --accent-dark:#3fa500; --accent-soft:#effbe7; --navy:#15253d;
     --bg:#f6f8fb; --card:#ffffff; --text:#182433; --muted:#607080; --border:#dfe6ee;
@@ -737,29 +736,41 @@
   .sound-setting{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   .sound-setting input[type="range"]{width:140px}
 </style>
+<link rel="stylesheet" href="styles/app.css">
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="brand"><div class="brand-mark">DET</div><div class="brand-copy"><strong>DET Practice Lab</strong><span>专项练习 · AI 反馈</span></div></div>
-    <div class="current-type-pill" id="currentTypePill" title="当前选中的题型,点此清空筛选">
-      <span class="ctp-label">题型</span>
-      <b id="currentTypeName">—</b>
-      <button type="button" class="ctp-clear" id="currentTypeClear" aria-label="清空选择">×</button>
+<div class="product-shell" id="productShell">
+  <aside class="global-sidebar" aria-label="主导航">
+    <button class="brand sidebar-brand" id="brandHomeBtn" type="button" aria-label="返回学习首页"><span class="brand-mark">D</span><span class="brand-copy"><strong>DET Path</strong><small>一点一点，走向目标分</small></span></button>
+    <p class="global-nav-label">我的备考旅程</p>
+    <nav class="global-nav">
+      <button id="navHome" class="global-nav-item active" type="button"><span class="nav-symbol">⌂</span><span>学习首页</span><i></i></button>
+      <button id="navPractice" class="global-nav-item" type="button"><span class="nav-symbol">◇</span><span>专项练习</span><i></i></button>
+      <button id="navReview" class="global-nav-item" type="button"><span class="nav-symbol">↺</span><span>错题复习</span><b id="reviewCount">0</b><i></i></button>
+      <button id="btnHistory" class="global-nav-item" type="button"><span class="nav-symbol">◷</span><span>学习记录</span><i></i></button>
+    </nav>
+    <div class="sidebar-coach"><span>✦</span><strong>一次只练一件事</strong><p>先完成眼前这一小步。答完以后，再决定下一步。</p></div>
+    <div class="sidebar-bottom">
+      <button id="btnRubric" type="button">评分说明</button><button id="btnSettings" type="button">AI 与设置</button>
+      <small>本地保存 · 无需登录</small>
     </div>
-    <div class="header-actions">
-      <div class="toolbar-section-head">⚙ 操作</div>
-      <button id="btnRandom">随机一题</button>
-      <button id="btnAI">AI 出题</button>
-      <button id="btnTest">模拟考试</button>
-      <button id="btnOfficial" title="旧版结构练习，不代表当前官方考试">📋 2024 旧版流程</button>
-      <button id="btnGaze" title="启用/关闭视线守护(摄像头检测)">👀 视线守护</button>
-      <button id="btnFactory" title="批量 AI 扩充题库(异步、可暂停)">📦 题库工厂</button>
-      <button id="btnRubric">评分标准</button>
-      <button id="btnSettings">设置</button>
-      <button id="btnHistory">记录</button>
+  </aside>
+  <section class="product-workspace">
+  <header class="product-topbar">
+    <div class="topbar-location"><span>我的学习</span><b>›</b><strong id="pageLocation">学习首页</strong></div>
+    <div class="current-type-pill" id="currentTypePill" title="当前选中的题型,点此清空筛选">
+      <span class="ctp-label">题型</span><b id="currentTypeName">—</b><button type="button" class="ctp-clear" id="currentTypeClear" aria-label="清空选择">×</button>
+    </div>
+    <div class="topbar-actions">
+      <button id="topSoundBtn" class="icon-action" type="button" title="试听界面音效" aria-label="试听界面音效">♪</button>
+      <button id="btnRandom" class="topbar-button" type="button">随机练习</button>
+      <button id="btnTest" class="topbar-button primary" type="button">模拟考试</button>
+      <details class="more-menu"><summary aria-label="更多功能">•••</summary><div class="more-menu-panel">
+        <button id="btnAI" type="button">AI 生成当前题型</button><button id="btnFactory" type="button">批量扩充题库</button><button id="btnGaze" type="button">视线守护</button><button id="btnOfficial" type="button" title="旧版结构练习，不代表当前官方考试">2024 旧版流程</button>
+      </div></details>
     </div>
   </header>
+<div class="wrap">
   <section class="hero">
     <div><div class="hero-eyebrow">Duolingo English Test Practice</div><h2>每做一题，都知道为什么得这个分</h2><p>按阅读、听力、口语和写作组织题库。客观题即时核对，主观题通过你现有的 DeepSeek API 给出分项评分、证据、改进建议与参考改写。</p></div>
     <div class="hero-status"><span class="status-label">当前学习目标</span><strong id="heroGoal">建立你的 DET 基线</strong><p id="heroWeak">在设置中填写目标分和弱项，AI 批改会自动围绕目标给建议。</p></div>
@@ -778,7 +789,7 @@
     </aside>
     <div class="nav-backdrop" id="navBackdrop"></div>
     <div class="practice-main">
-      <div class="practice-topbar"><button id="mobileNavBtn" class="mobile-nav-btn" type="button">☰ 题库</button><div class="practice-kicker" id="practiceKicker">选择题型开始练习</div><div class="practice-nav-actions"><button id="prevType" type="button">← <span>上一题型</span></button><button id="nextType" type="button"><span>下一题型</span> →</button></div><button id="toolbarGear" class="toolbar-gear" type="button" title="难度 & 工具" aria-label="难度 & 工具" aria-expanded="false" aria-controls="toolbarPopup">⚙</button><div class="toolbar-popup" id="toolbarPopup" role="dialog" aria-label="难度与工具" hidden><div class="toolbar-section-head">🛠 难度 & 工具</div><label for="bandSel">题目难度</label><select id="bandSel"><option value="all">全部</option><option value="60">60–85 · B1</option><option value="90">90–115 · B2</option><option value="120">120–160 · C1/C2</option></select><button id="adaptiveBtn" class="adaptive-toggle" type="button" aria-pressed="false">自适应：关</button><button id="bankFactoryBtn" class="adaptive-toggle" type="button">AI 扩充题库</button><span id="difficultyHint">有图片的题按图片难度筛选；无图片的题按题目难度筛选</span></div></div>
+      <div class="practice-topbar"><button id="mobileNavBtn" class="mobile-nav-btn" type="button">← 返回选题</button><div class="practice-kicker" id="practiceKicker">选择题型开始练习</div><div class="practice-nav-actions"><button id="prevType" type="button">← <span>上一题型</span></button><button id="nextType" type="button"><span>下一题型</span> →</button></div><button id="toolbarGear" class="toolbar-gear" type="button" title="难度 & 工具" aria-label="难度 & 工具" aria-expanded="false" aria-controls="toolbarPopup">⚙</button><div class="toolbar-popup" id="toolbarPopup" role="dialog" aria-label="难度与工具" hidden><div class="toolbar-section-head">🛠 难度 & 工具</div><label for="bandSel">题目难度</label><select id="bandSel"><option value="all">全部</option><option value="60">60–85 · B1</option><option value="90">90–115 · B2</option><option value="120">120–160 · C1/C2</option></select><button id="adaptiveBtn" class="adaptive-toggle" type="button" aria-pressed="false">自适应：关</button><button id="bankFactoryBtn" class="adaptive-toggle" type="button">AI 扩充题库</button><span id="difficultyHint">有图片的题按图片难度筛选；无图片的题按题目难度筛选</span></div></div>
       <main><div id="questionArea"></div><div id="resultArea"></div></main>
     </div>
   </div>
@@ -787,6 +798,8 @@
     API Key 只存浏览器 localStorage。「🔄 AI 出题」现场生成新题，无限量。<br>
     口语/听力需要 Chrome/Edge + 麦克风权限 + 系统英文语音（浏览器 TTS 模拟，辨音仅供参考）。想调整难度或补充题型，点页面右上角的 ⚙ 齿轮即可。
   </footer>
+</div>
+</section>
 </div>
 
 <div id="settingsModal" class="modal-bg hidden">
@@ -896,6 +909,8 @@
 <script src="js/rules.js"></script>
 <script src="js/session.js"></script>
 <script src="js/sound.js"></script>
+<script src="js/learning.js"></script>
+<script src="js/views.js"></script>
 <script>
 "use strict";
 // ================= 设置 =================
@@ -1076,6 +1091,17 @@ const QUESTION_GROUPS=[
   {key:'speaking',label:'Speaking · 口语',items:['sp','rtsp','isp','ss','ra']},
   {key:'writing',label:'Writing · 写作',items:['wp','iw','ws']}
 ];
+const DOMAIN_META={
+  reading:{label:'阅读',description:'词汇、完形与篇章理解'},
+  listening:{label:'听力',description:'辨音、听写与互动理解'},
+  speaking:{label:'口语',description:'描述、陈述与互动表达'},
+  writing:{label:'写作',description:'图片、互动与长篇表达'}
+};
+const LEARNING_CATALOG=TABORDER.map(id=>{
+  const group=QUESTION_GROUPS.find(item=>item.items.includes(id))||QUESTION_GROUPS[0];
+  const meta=DOMAIN_META[group.key];
+  return {id,label:TC[id].label,sub:TC[id].sub,domain:group.key,domainLabel:meta.label,domainDescription:meta.description,minutes:Math.max(1,Math.ceil(TC[id].time/60))};
+});
 const SCORE_BANDS=[
   {min:10,max:55,cefr:'A1/A2',desc:'能理解和使用基础的日常表达。'},
   {min:60,max:85,cefr:'B1',desc:'能围绕熟悉话题理解并组织连贯表达。'},
@@ -2315,6 +2341,7 @@ function bookItemHtml(it,idx,kind){
 function showStudyBook(kind){
   currentView=kind;clearTimer();resultArea.innerHTML='';currentQ=null;
   document.body.classList.remove('il-active');
+  setProductView('review',kind==='favorites'?'收藏题':'错题复习');
   document.querySelectorAll('#typeTabs [data-key],#typeTabs [data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===kind));
   uiState.openGroups=['study'];saveUiState();syncGroupOpenStates();
   const list=filteredBookItems(kind);
@@ -2392,10 +2419,38 @@ function refreshCurrentTypePill(type){
     pill.classList.remove('active');
   }
 }
+function setProductView(view,label){
+  document.body.classList.toggle('focus-practice',view==='focus');
+  const location=document.getElementById('pageLocation');if(location)location.textContent=label||'学习首页';
+  const active=view==='home'?'navHome':view==='library'||view==='focus'?'navPractice':view==='review'?'navReview':'';
+  ['navHome','navPractice','navReview','btnHistory'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',id===active);});
+  const count=document.getElementById('reviewCount');if(count)count.textContent=String(mistakeStore.filter(item=>!item.mastered).length);
+}
+function learningSnapshot(){return AppLearning.summarize(getHistory(),LEARNING_CATALOG,settings,new Date());}
+function learningDateLabel(){return new Date().toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'long'});}
+function bindLearningView(root){
+  root.querySelectorAll('[data-start-type]').forEach(button=>button.onclick=()=>{AppSound.play('start');showTypePreview(button.dataset.startType);});
+  root.querySelectorAll('[data-domain]').forEach(button=>button.onclick=()=>showPracticeLibrary(button.dataset.domain));
+  root.querySelectorAll('[data-filter-domain]').forEach(button=>button.onclick=()=>showPracticeLibrary(button.dataset.filterDomain||''));
+  const browse=root.querySelector('#homeBrowseBtn'),all=root.querySelector('#homeAllTypesBtn'),home=root.querySelector('#libraryHomeBtn'),review=root.querySelector('#homeReviewBtn');
+  if(browse)browse.onclick=()=>showPracticeLibrary();if(all)all.onclick=()=>showPracticeLibrary();if(home)home.onclick=showLearningHome;if(review)review.onclick=()=>showStudyBook('mistakes');
+}
+function showLearningHome(){
+  currentView='home';currentReview=null;currentType=null;currentQ=null;clearTimer();resultArea.innerHTML='';
+  document.body.classList.remove('il-active');setProductView('home','学习首页');refreshCurrentTypePill(null);
+  qArea.innerHTML=AppViews.home(learningSnapshot(),{date:learningDateLabel()});bindLearningView(qArea);closeMobileNav();
+}
+function showPracticeLibrary(domain){
+  currentView='library';currentReview=null;currentQ=null;clearTimer();resultArea.innerHTML='';
+  document.body.classList.remove('il-active');setProductView('library','专项练习');refreshCurrentTypePill(null);
+  qArea.innerHTML=AppViews.library(learningSnapshot(),LEARNING_CATALOG,domain||'');bindLearningView(qArea);closeMobileNav();
+}
+function exitPractice(){showPracticeLibrary((groupForType(currentType)||{}).key||'');}
 function renderCurrent(type,q){clearTimer();resultArea.innerHTML='';document.body.classList.toggle('il-active',type==='il');RENDERERS[type](q);}
 function showTypePreview(type,preserveGroup){
   currentView='practice';currentReview=null;currentType=type;currentQ=null;clearTimer();resultArea.innerHTML='';
   document.body.classList.toggle('il-active',type==='il');
+  setProductView('focus',TC[type].label);
   uiState.lastType=type;saveUiState();
   if(!preserveGroup)openGroupForType(type);
   setActiveTab(type);updateDifficultyHint(type);
@@ -2405,9 +2460,10 @@ function showTypePreview(type,preserveGroup){
   qArea.innerHTML=`<div class="card official-task-card practice-ready-card"><div class="exam-stage"><div class="official-task-inner">
     <span class="feedback-kicker">${esc(groupForType(type)?.label||'专项练习')}</span>
     <h2 class="exam-title">${esc(TC[type].label)}</h2>
-    <p class="q-instr">${esc(TC[type].sub)} · 单题最长 ${fmt(TC[type].time)}。点击开始后才会显示题目并计时，你可以先调整难度或查看评分标准。</p>
+    <p class="q-instr">${esc(TC[type].sub)} · 单题最长 ${fmt(TC[type].time)}。先了解任务，再开始计时。</p>
     ${last!=null?`<p class="hint">最近练习估分：${last}</p>`:''}
-    <div class="q-actions" style="justify-content:center"><button id="startPracticeBtn" class="primary" type="button">开始本题</button><button type="button" onclick="showRubric('${type}')">先看评分标准</button></div>
+    <div class="practice-brief"><span><b>1</b> 看清任务</span><i></i><span><b>2</b> 独立作答</span><i></i><span><b>3</b> 查看反馈</span></div>
+    <div class="q-actions" style="justify-content:center"><button id="startPracticeBtn" class="primary" type="button">开始本题</button><button type="button" onclick="showRubric('${type}')">评分说明</button><button type="button" onclick="exitPractice()">返回选题</button></div>
   </div></div></div>`;
   qArea.querySelector('#startPracticeBtn').onclick=()=>{AppSound.play('start');showType(type,true);};
   closeMobileNav();
@@ -2415,6 +2471,7 @@ function showTypePreview(type,preserveGroup){
 function showType(type,preserveGroup){
   currentView='practice';currentReview=null;currentType=type;clearTimer();resultArea.innerHTML='';
   document.body.classList.toggle('il-active',type==='il');
+  setProductView('focus',TC[type].label);
   uiState.lastType=type;saveUiState();
   currentQ=nextQuestion(type);
   if(!preserveGroup)openGroupForType(type);
@@ -2429,7 +2486,7 @@ function showType(type,preserveGroup){
 function cardHead(label,sub,t,badge){
   const diff=(badge||questionDifficultyBadge(currentQ))+pickInfoBadge();
   const fav=isFavorited()? ' active':'';
-  return `<div class="q-head exam-topbar"><div class="exam-timer"><span class="exam-clock" aria-hidden="true"></span><span class="timer" id="timer">${fmt(t)}</span><span class="exam-time-label">for this question</span></div><div class="q-head-actions"><span class="q-type"><span class="q-type-title">${esc(label)}</span><span class="q-sub">${esc(sub)}</span><span class="q-badges">${diff}</span></span><button id="favoriteBtn" class="favorite-btn${fav}" type="button" onclick="toggleFavoriteCurrent()" title="收藏本题并填写原因">${fav?'★':'☆'}</button><button id="pauseTimerBtn" class="pause-timer" type="button" onclick="toggleTimerPause()" disabled>暂停时间</button><button class="rubric-link" type="button" onclick="showRubric(currentType)">评分</button><button class="exam-close" type="button" onclick="showTypePreview(currentType)" aria-label="退出本题">×</button></div></div>`;
+  return `<div class="q-head exam-topbar"><div class="exam-timer"><span class="exam-clock" aria-hidden="true"></span><span class="timer" id="timer">${fmt(t)}</span><span class="exam-time-label">for this question</span></div><div class="q-head-actions"><span class="q-type"><span class="q-type-title">${esc(label)}</span><span class="q-sub">${esc(sub)}</span><span class="q-badges">${diff}</span></span><button id="favoriteBtn" class="favorite-btn${fav}" type="button" onclick="toggleFavoriteCurrent()" title="收藏本题并填写原因">${fav?'★':'☆'}</button><button id="pauseTimerBtn" class="pause-timer" type="button" onclick="toggleTimerPause()" disabled>暂停时间</button><button class="rubric-link" type="button" onclick="showRubric(currentType)">评分</button><button class="exam-close" type="button" onclick="exitPractice()" aria-label="退出本题">×</button></div></div>`;
 }
 function aiBtn(){return `<button id="aiBtn" class="ai">🔄 AI 出题</button>`;}
 function photoHtml(q){
@@ -4215,12 +4272,12 @@ function renderTestReport(grades){
   });
   html+='</tbody></table>';
   html+='<div class="comment"><p>说明：总分按各题型得分平均估算，仅供参考；真实 DET 总分由官方自适应算法给出。互动阅读/互动听力在整场考试中每次出 12 题左右，本模拟用一组代表题型。</p></div>';
-  html+='<div class="q-actions"><button onclick="afterTest()">返回练习</button></div></div>';
+  html+='<div class="q-actions"><button onclick="afterTest()">返回学习首页</button></div></div>';
   resultArea.innerHTML=html;
   AppSound.play('complete');
   logHistory('test',overall!=null?overall:0,'模拟考试 '+testSteps.length+' 题',{feedback:{comment:'模拟考试按本次各模块练习分汇总；真实 DET 使用官方自适应算法。'},rows,subscores:subs});
 }
-function afterTest(){testRunning=false;showTypePreview('rs');}
+function afterTest(){testRunning=false;showLearningHome();}
 async function startTest(){
   if(testRunning)return;
   if(!confirm('开始模拟考试？\n\n按真实 DET 流程连续作答：每题限时与真实考试一致（界面不显示倒计时），时间到自动进入下一题；中途不能暂停。时长约 45–60 分钟。'))return;
@@ -4238,7 +4295,7 @@ async function startTest(){
   renderTestStep(0);
 }
 document.getElementById('btnQuitTest').onclick=()=>{
-  if(confirm('退出考试？本次成绩不计入记录。')){clearTimer();stopRecord();testRunning=false;document.body.classList.remove('testing');document.getElementById('testBar').classList.add('hidden');qArea.classList.remove('test-mode');showTypePreview('rs');}
+  if(confirm('退出考试？本次成绩不计入记录。')){clearTimer();stopRecord();testRunning=false;document.body.classList.remove('testing');document.getElementById('testBar').classList.add('hidden');qArea.classList.remove('test-mode');showLearningHome();}
 };
 
 // ================= 2024 旧版流程练习（不代表当前官方考试）=================
@@ -4354,7 +4411,7 @@ async function startOfficialFlow(){
 // ================= 初始化 =================
 renderQuestionNavigation();
 document.getElementById('sidebarToggle').onclick=toggleSidebar;
-document.getElementById('mobileNavBtn').onclick=openMobileNav;
+document.getElementById('mobileNavBtn').onclick=exitPractice;
 document.getElementById('navBackdrop').onclick=closeMobileNav;
 document.getElementById('prevType').onclick=()=>switchType(-1);
 document.getElementById('nextType').onclick=()=>switchType(1);
@@ -4362,7 +4419,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(closeTopModal())
 window.addEventListener('resize',()=>{if(window.innerWidth>820)closeMobileNav();applySidebarState();});
 applySidebarState();
 document.getElementById('btnRandom').onclick=()=>showType(rnd(TABORDER));
-document.getElementById('btnAI').onclick=()=>{closeMobileNav();doAIQuestion();};
+document.getElementById('btnAI').onclick=()=>{closeMobileNav();if(currentType)doAIQuestion();else showPracticeLibrary();};
 document.getElementById('btnTest').onclick=()=>{startTest();};
 document.getElementById('btnOfficial').onclick=()=>{startOfficialFlow();};
 document.getElementById('btnGaze').onclick=()=>{toggleGazeGuardian();document.getElementById('btnGaze').classList.toggle('primary',gazeState.active);};
@@ -4379,20 +4436,24 @@ document.getElementById('bandSel').onchange=()=>{
 syncAdaptiveButton();
 if('speechSynthesis' in window){speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();}
 updateStudyOverview();
-showTypePreview(TABORDER.includes(uiState.lastType)?uiState.lastType:'rs',true);
+document.getElementById('brandHomeBtn').onclick=showLearningHome;
+document.getElementById('navHome').onclick=showLearningHome;
+document.getElementById('navPractice').onclick=()=>showPracticeLibrary();
+document.getElementById('navReview').onclick=()=>showStudyBook('mistakes');
+document.getElementById('topSoundBtn').onclick=()=>AppSound.play('start');
+const initialRoute=location.hash.match(/^#practice=([a-z]+)$/);
+if(initialRoute&&TABORDER.includes(initialRoute[1]))showTypePreview(initialRoute[1],true);
+else if(location.hash==='#library')showPracticeLibrary();
+else showLearningHome();
 refreshApiStatusBar();
 refreshCurrentTypePill();
 // “清空题型”按钮
 const ctpClear=document.getElementById('currentTypeClear');
 if(ctpClear)ctpClear.onclick=()=>{
-  uiState.lastType='rs';saveUiState();
-  showTypePreview('rs');
-  refreshCurrentTypePill('rs');
+  showPracticeLibrary();
   // 关闭移动抽屉,如果有打开
   closeMobileNav();
 };
-// 首次打开:无 key + 从未跳过引导 → 显示顶部引导条
-setTimeout(()=>{try{showSetupBanner();}catch(e){}},500);
 </script>
 </body>
 </html>
