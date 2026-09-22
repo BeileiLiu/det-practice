@@ -42,7 +42,7 @@ PROXY_ENDPOINT = 'https://api.deepseek.com/chat/completions'
 ROOT = os.path.dirname(os.path.abspath(__file__))
 UPSTREAM_TIMEOUT = 120
 PUBLIC_ROOT_FILES = {'index.html'}
-PUBLIC_DIRS = {'js', 'images', 'fonts'}
+PUBLIC_DIRS = {'js', 'images', 'fonts', 'styles'}
 
 
 def _public_file_for_path(url_path, root=ROOT):

@@ -8,7 +8,7 @@ import server
 class PublicFileTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        for rel in ('index.html', 'server.env', 'server.py', 'js/app.js', 'images/p.jpg', 'fonts/a.woff2'):
+        for rel in ('index.html', 'server.env', 'server.py', 'js/app.js', 'images/p.jpg', 'fonts/a.woff2', 'styles/app.css'):
             path = os.path.join(self.tmp.name, *rel.split('/'))
             os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, 'wb') as file:
@@ -26,6 +26,7 @@ class PublicFileTests(unittest.TestCase):
         self.assertTrue(self.resolve('/js/app.js?v=1'))
         self.assertTrue(self.resolve('/images/p.jpg'))
         self.assertTrue(self.resolve('/fonts/a.woff2'))
+        self.assertTrue(self.resolve('/styles/app.css'))
 
     def test_server_files_and_traversal_are_blocked(self):
         self.assertIsNone(self.resolve('/server.env'))
